@@ -21,21 +21,8 @@ try
     GlobalFontSettings.FontResolver ??= new PdfFontResolver();
     var statuses = new ConcurrentDictionary<int, PageStatus>();
     AnsiConsole.Clear();
-
-    var figlet = new FigletText("OCR Flow")
-    {
-        Color = Color.Green,
-        Justification = Justify.Center
-    };
-
-    var panel = new Panel(figlet)
-    {
-        Border = BoxBorder.Double,
-        BorderStyle = new Style(Color.Red),
-        Padding = new Padding(1, 1, 1, 1)
-    };
-
-    AnsiConsole.Write(panel);
+    
+    PrintHeader();
 
     var app = new CommandApp<OcrCommand>();
     app.Configure(cfg =>
@@ -44,12 +31,42 @@ try
         cfg.ValidateExamples();
     });
 
-    throw new Exception("I got this error during my tests.");
-
     return app.Run(args);
 }
 catch (Exception ex)
 {
     CrashReporter.Handle(ex);
     return -1;
+}
+
+void PrintHeader()
+{
+    var figlet = new FigletText("OCR Flow")
+    {
+        Color = Color.Green,
+        Justification = Justify.Center
+    };
+
+    var link = new Markup(
+        "[grey]https://github.com/asienicki/OcrFlow[/]\n" +
+        "[dim]Convert scans into searchable PDFs\r\nExport structured Markdown[/]"
+    )
+    {
+        Justification = Justify.Center
+    };
+
+    var content = new Rows(
+        figlet,
+        new Rule { Style = Style.Parse("grey") },
+        link
+    );
+
+    var panel = new Panel(content)
+    {
+        Border = BoxBorder.Double,
+        BorderStyle = new Style(Color.Red),
+        Padding = new Padding(1, 1, 1, 1)
+    };
+
+    AnsiConsole.Write(panel);
 }

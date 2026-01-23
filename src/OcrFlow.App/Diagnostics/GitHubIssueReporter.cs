@@ -10,7 +10,7 @@ namespace OcrFlow.App.Diagnostics
     {
         private const string Owner = "asienicki"; // TODO: set GitHub owner
         private const string Repo = "OcrFlow";   // TODO: set GitHub repo
-        private const string IssueTemplate = null;//"crash.yml"; // optional
+        private const string IssueTemplate = "crash.yml"; // optional
 
         public static void ReportWithPrompt(string body, string hash)
         {
@@ -33,24 +33,17 @@ namespace OcrFlow.App.Diagnostics
             OpenBrowser(url);
         }
 
-        private static string BuildIssueUrl(string bodyContent, string hash)
+        private static string BuildIssueUrl(string stacktrace, string hash)
         {
             var title = Url($"Crash [{hash}]");
-
-            var body = Url($@"### What happened
-The application crashed.
-
-### Stack trace
-```
-{bodyContent}
-```
-");
 
             var baseUrl = $"https://github.com/{Owner}/{Repo}/issues/new";
 
             var sb = new StringBuilder(baseUrl);
             sb.Append($"?title={title}");
-            sb.Append($"&body={body}");
+            sb.Append($"&stacktrace={stacktrace}");
+            sb.Append($"&what-happened=The application crashed.");
+            sb.Append($"&os={RuntimeInformation.OSDescription}");
             sb.Append("&labels=bug,crash");
 
             if (!string.IsNullOrWhiteSpace(IssueTemplate))
