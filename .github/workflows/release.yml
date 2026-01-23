@@ -67,7 +67,7 @@ jobs:
       - name: Rename MSI
         run: |
           $v = "${{ steps.version.outputs.version }}"
-          Rename-Item `
+          Move-Item `
             "installer/OcrFlow.Installer/bin/x64/Release/OcrFlow.Installer.msi" `
             "installer/OcrFlow.Installer/bin/x64/Release/OcrFlow.Installer-v$v.msi"
 
