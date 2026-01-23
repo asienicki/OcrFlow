@@ -75,5 +75,5 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            OcrFlow-win-x64.zip
+            OcrFlow-win-x64-v${{ steps.version.outputs.version }}.zip
             OcrFlow.Installer-v${{ steps.version.outputs.version }}.msi
