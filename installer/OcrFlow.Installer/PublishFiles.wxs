@@ -131,7 +131,7 @@
         <File Id="File_es_Spectre_Console_Cli_resources_dll" Source="$(var.PublishDir)\es\Spectre.Console.Cli.resources.dll" />
       </Component>
       <Component Id="Comp_fonts_DejaVuSans_ttf" Guid="2e52bbff-4c63-4eec-9367-b1811c1dd8b4" Directory="Dir_fonts">
-        <File Id="File_fonts_DejaVuSans_ttf" Source="$(var.PublishDir)\fonts\DejaVuSans.ttf" />
+        <File Id="File_fonts_DejaVuSans_ttf" Source="$(var.PublishDir)\fonts\DejaVuSans.ttf" KeyPath="yes" Language="1033" />
       </Component>
       <Component Id="Comp_fr_Spectre_Console_Cli_resources_dll" Guid="0ae2e4c5-f001-40af-8313-30a089ecb5ef" Directory="Dir_fr">
         <File Id="File_fr_Spectre_Console_Cli_resources_dll" Source="$(var.PublishDir)\fr\Spectre.Console.Cli.resources.dll" />
