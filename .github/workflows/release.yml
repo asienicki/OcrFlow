@@ -68,10 +68,18 @@ jobs:
             -p:PublishDir=..\..\publish `
             -p:ProductVersion=${{ steps.version.outputs.version }}
 
+      - name: Prepare MSI artifact
+        shell: pwsh
+        run: |
+          $v = "${{ steps.version.outputs.version }}"
+          Copy-Item `
+            "installer/OcrFlow.Installer/bin/x64/Release/OcrFlow.Installer.msi" `
+            "OcrFlow.Installer-v$v.msi"
+
       # 6️⃣ GitHub Release (ZIP + MSI – bez kopiowania!)
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
             OcrFlow-win-x64-v${{ steps.version.outputs.version }}.zip
-            installer/OcrFlow.Installer/bin/x64/Release/OcrFlow.Installer.msi
+            OcrFlow.Installer-v${{ steps.version.outputs.version }}.msi
