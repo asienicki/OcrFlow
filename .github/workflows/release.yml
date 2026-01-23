@@ -19,28 +19,31 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
-      # 1️⃣ Wyciągnij wersję z taga (v0.0.7 -> 0.0.7)
+      # 1️⃣ Wyciągnij wersję z taga (v0.0.8 -> 0.0.8)
       - name: Extract version from tag
         id: version
+        shell: pwsh
         run: |
           $v = "${{ github.ref_name }}".TrimStart("v")
-          echo "version=$v" >> $env:GITHUB_OUTPUT
+          "version=$v" >> $env:GITHUB_OUTPUT
 
       # 2️⃣ Publish + stemplowanie assembly
       - name: Publish CLI
-        run: >
-          dotnet publish src/OcrFlow.App/OcrFlow.App.csproj
-          -c Release
-          -r win-x64
-          --self-contained false
-          -o publish
-          -p:Version=${{ steps.version.outputs.version }}
-          -p:AssemblyVersion=${{ steps.version.outputs.version }}
-          -p:FileVersion=${{ steps.version.outputs.version }}
-          -p:InformationalVersion=${{ steps.version.outputs.version }}
+        shell: pwsh
+        run: |
+          dotnet publish src/OcrFlow.App/OcrFlow.App.csproj `
+            -c Release `
+            -r win-x64 `
+            --self-contained false `
+            -o publish `
+            -p:Version=${{ steps.version.outputs.version }} `
+            -p:AssemblyVersion=${{ steps.version.outputs.version }} `
+            -p:FileVersion=${{ steps.version.outputs.version }} `
+            -p:InformationalVersion=${{ steps.version.outputs.version }}
 
       # 3️⃣ ZIP z publish/
       - name: Package ZIP
+        shell: pwsh
         run: |
           $v = "${{ steps.version.outputs.version }}"
           Compress-Archive `
@@ -49,6 +52,7 @@ jobs:
 
       # 4️⃣ Generuj PublishFiles.wxs
       - name: Generate WiX file list
+        shell: pwsh
         run: |
           powershell -ExecutionPolicy Bypass `
             -File installer/OcrFlow.Installer/generate-wix-files.ps1 `
@@ -57,31 +61,17 @@ jobs:
 
       # 5️⃣ Build MSI (ProductVersion = wersja z taga)
       - name: Build MSI
-        run: >
-          dotnet build installer/OcrFlow.Installer/OcrFlow.Installer.wixproj
-          -c Release
-          -p:PublishDir=..\..\publish
-          -p:ProductVersion=${{ steps.version.outputs.version }}
-
-      # 6️⃣ Rename MSI w katalogu build
-      - name: Rename MSI
+        shell: pwsh
         run: |
-          $v = "${{ steps.version.outputs.version }}"
-          Move-Item `
-            "installer/OcrFlow.Installer/bin/x64/Release/OcrFlow.Installer.msi" `
-            "installer/OcrFlow.Installer/bin/x64/Release/OcrFlow.Installer-v$v.msi"
+          dotnet build installer/OcrFlow.Installer/OcrFlow.Installer.wixproj `
+            -c Release `
+            -p:PublishDir=..\..\publish `
+            -p:ProductVersion=${{ steps.version.outputs.version }}
 
-      # 7️⃣ Skopiuj artefakty do root (wymagane przez action-gh-release)
-      - name: Copy artifacts to root
-        run: |
-          $v = "${{ steps.version.outputs.version }}"
-          Copy-Item "installer/OcrFlow.Installer/bin/x64/Release/OcrFlow.Installer-v$v.msi" "."
-          Copy-Item "OcrFlow-win-x64-v$v.zip" "."
-
-      # 8️⃣ GitHub Release
+      # 6️⃣ GitHub Release (ZIP + MSI – bez kopiowania!)
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
             OcrFlow-win-x64-v${{ steps.version.outputs.version }}.zip
-            OcrFlow.Installer-v${{ steps.version.outputs.version }}.msi
+            installer/OcrFlow.Installer/bin/x64/Release/OcrFlow.Installer.msi
