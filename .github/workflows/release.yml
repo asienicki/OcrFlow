@@ -19,7 +19,7 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
-      # 1️⃣ Wyciągnij wersję z taga (v1.0.5 -> 1.0.5)
+      # 1️⃣ Wyciągnij wersję z taga (v0.0.7 -> 0.0.7)
       - name: Extract version from tag
         id: version
         run: |
@@ -42,6 +42,7 @@ jobs:
       # 3️⃣ ZIP z publish/
       - name: Package ZIP
         run: |
+          $v = "${{ steps.version.outputs.version }}"
           Compress-Archive `
             -Path "publish\*" `
             -DestinationPath "OcrFlow-win-x64-v$v.zip"
@@ -62,15 +63,22 @@ jobs:
           -p:PublishDir=..\..\publish
           -p:ProductVersion=${{ steps.version.outputs.version }}
 
+      # 6️⃣ Rename MSI w katalogu build
       - name: Rename MSI
         run: |
           $v = "${{ steps.version.outputs.version }}"
           Rename-Item `
             "installer/OcrFlow.Installer/bin/x64/Release/OcrFlow.Installer.msi" `
-            "OcrFlow.Installer-v$v.msi"
+            "installer/OcrFlow.Installer/bin/x64/Release/OcrFlow.Installer-v$v.msi"
 
+      # 7️⃣ Skopiuj artefakty do root (wymagane przez action-gh-release)
+      - name: Copy artifacts to root
+        run: |
+          $v = "${{ steps.version.outputs.version }}"
+          Copy-Item "installer/OcrFlow.Installer/bin/x64/Release/OcrFlow.Installer-v$v.msi" "."
+          Copy-Item "OcrFlow-win-x64-v$v.zip" "."
 
-      # 6️⃣ GitHub Release (ZIP + MSI)
+      # 8️⃣ GitHub Release
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
