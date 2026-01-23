@@ -1,0 +1,50 @@
+name: 💥 Crash report
+description: Application crashed with an unhandled exception
+title: "Crash: "
+labels:
+  - bug
+  - crash
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a crash.
+        This issue was generated from the CLI.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Describe what you were doing when the crash occurred.
+      placeholder: "Command used, input files, expected behavior…"
+    validations:
+      required: true
+
+  - type: textarea
+    id: stacktrace
+    attributes:
+      label: Stack trace
+      description: Sanitized stack trace (auto-filled by the app)
+      render: text
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: Operating system
+      placeholder: "Windows / Linux / macOS"
+
+  - type: input
+    id: dotnet
+    attributes:
+      label: .NET version
+      placeholder: "10.0.x"
+
+  - type: checkboxes
+    id: consent
+    attributes:
+      label: Privacy
+      options:
+        - label: I confirm this report contains no personal or sensitive data
+          required: true
