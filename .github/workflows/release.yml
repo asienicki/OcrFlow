@@ -36,6 +36,8 @@ jobs:
             -r win-x64 `
             --self-contained false `
             -o publish `
+            -p:DebugType=None `
+            -p:DebugSymbols=false `
             -p:Version=${{ steps.version.outputs.version }} `
             -p:AssemblyVersion=${{ steps.version.outputs.version }} `
             -p:FileVersion=${{ steps.version.outputs.version }} `

@@ -37,139 +37,127 @@
 
   <Fragment>
     <ComponentGroup Id="PublishFiles">
-      <Component Id="Comp_Microsoft_Extensions_DependencyInjection_Abstractions_dll" Guid="ca918708-6725-447f-8c7e-97e3f51dfdf1" Directory="INSTALLDIR">
+      <Component Id="Comp_Microsoft_Extensions_DependencyInjection_Abstractions_dll" Guid="ae465734-d73c-418b-a69d-298b806c3756" Directory="INSTALLDIR">
         <File Id="File_Microsoft_Extensions_DependencyInjection_Abstractions_dll" Source="$(var.PublishDir)\Microsoft.Extensions.DependencyInjection.Abstractions.dll" />
       </Component>
-      <Component Id="Comp_Microsoft_Extensions_Logging_Abstractions_dll" Guid="76961a10-1253-48ac-9c4d-a896c01dfd10" Directory="INSTALLDIR">
+      <Component Id="Comp_Microsoft_Extensions_Logging_Abstractions_dll" Guid="9e315b5a-7ab0-41ab-ac33-2e70b6be13bf" Directory="INSTALLDIR">
         <File Id="File_Microsoft_Extensions_Logging_Abstractions_dll" Source="$(var.PublishDir)\Microsoft.Extensions.Logging.Abstractions.dll" />
       </Component>
-      <Component Id="Comp_OcrFlow_Core_dll" Guid="d019a521-f544-47fa-aa5f-03ce5b159c40" Directory="INSTALLDIR">
+      <Component Id="Comp_OcrFlow_Core_dll" Guid="a1960b22-2a89-4498-b761-01a6494578ee" Directory="INSTALLDIR">
         <File Id="File_OcrFlow_Core_dll" Source="$(var.PublishDir)\OcrFlow.Core.dll" />
       </Component>
-      <Component Id="Comp_OcrFlow_Core_pdb" Guid="62620f0b-5cc7-4408-ac15-4c1380f3147e" Directory="INSTALLDIR">
-        <File Id="File_OcrFlow_Core_pdb" Source="$(var.PublishDir)\OcrFlow.Core.pdb" />
-      </Component>
-      <Component Id="Comp_OcrFlow_deps_json" Guid="af0f2528-fe3d-4ee2-a6ea-58c1903e2a82" Directory="INSTALLDIR">
+      <Component Id="Comp_OcrFlow_deps_json" Guid="9d30a732-ec4b-4761-80b5-5d96e9edb2ab" Directory="INSTALLDIR">
         <File Id="File_OcrFlow_deps_json" Source="$(var.PublishDir)\OcrFlow.deps.json" />
       </Component>
-      <Component Id="Comp_OcrFlow_dll" Guid="66d6cc70-717a-43cc-97a5-9824ca062f4a" Directory="INSTALLDIR">
+      <Component Id="Comp_OcrFlow_dll" Guid="e6858be7-2a15-4b9c-b37d-8bb8f0acd021" Directory="INSTALLDIR">
         <File Id="File_OcrFlow_dll" Source="$(var.PublishDir)\OcrFlow.dll" />
       </Component>
-      <Component Id="Comp_OcrFlow_exe" Guid="67bf625e-8d7e-4246-9b29-40aa05477f16" Directory="INSTALLDIR">
+      <Component Id="Comp_OcrFlow_exe" Guid="df7580e1-6dca-466c-9efa-724bdd8da365" Directory="INSTALLDIR">
         <File Id="File_OcrFlow_exe" Source="$(var.PublishDir)\OcrFlow.exe" KeyPath="yes" />
       </Component>
-      <Component Id="Comp_OcrFlow_Infrastructure_dll" Guid="6b8def75-d313-4633-b906-b393b18e9acb" Directory="INSTALLDIR">
+      <Component Id="Comp_OcrFlow_Infrastructure_dll" Guid="755175a0-0123-44a8-9410-426219530740" Directory="INSTALLDIR">
         <File Id="File_OcrFlow_Infrastructure_dll" Source="$(var.PublishDir)\OcrFlow.Infrastructure.dll" />
       </Component>
-      <Component Id="Comp_OcrFlow_Infrastructure_pdb" Guid="fa669c75-aac0-4d39-bb41-b9dad5fe7423" Directory="INSTALLDIR">
-        <File Id="File_OcrFlow_Infrastructure_pdb" Source="$(var.PublishDir)\OcrFlow.Infrastructure.pdb" />
-      </Component>
-      <Component Id="Comp_OcrFlow_pdb" Guid="75573185-2da2-4574-b902-a4cf80651b10" Directory="INSTALLDIR">
-        <File Id="File_OcrFlow_pdb" Source="$(var.PublishDir)\OcrFlow.pdb" />
-      </Component>
-      <Component Id="Comp_OcrFlow_Resources_dll" Guid="e158a957-333d-4131-ae2d-18322b022d95" Directory="INSTALLDIR">
+      <Component Id="Comp_OcrFlow_Resources_dll" Guid="81fb1ca5-6745-49bb-a8e3-cfe408b7d92c" Directory="INSTALLDIR">
         <File Id="File_OcrFlow_Resources_dll" Source="$(var.PublishDir)\OcrFlow.Resources.dll" />
       </Component>
-      <Component Id="Comp_OcrFlow_Resources_pdb" Guid="aed1e850-b49c-4864-9c86-9320c0f189e9" Directory="INSTALLDIR">
-        <File Id="File_OcrFlow_Resources_pdb" Source="$(var.PublishDir)\OcrFlow.Resources.pdb" />
-      </Component>
-      <Component Id="Comp_OcrFlow_runtimeconfig_json" Guid="6391d840-9181-47f1-a603-5403fe6bb66d" Directory="INSTALLDIR">
+      <Component Id="Comp_OcrFlow_runtimeconfig_json" Guid="0deadaed-75bc-4757-962d-fd3e4b2ae643" Directory="INSTALLDIR">
         <File Id="File_OcrFlow_runtimeconfig_json" Source="$(var.PublishDir)\OcrFlow.runtimeconfig.json" />
       </Component>
-      <Component Id="Comp_PdfSharp_BarCodes_dll" Guid="5816799a-40a2-4648-8771-b5be5c8692fc" Directory="INSTALLDIR">
+      <Component Id="Comp_PdfSharp_BarCodes_dll" Guid="064d9cee-357c-4576-add4-a4ad1c5cf337" Directory="INSTALLDIR">
         <File Id="File_PdfSharp_BarCodes_dll" Source="$(var.PublishDir)\PdfSharp.BarCodes.dll" />
       </Component>
-      <Component Id="Comp_PdfSharp_Charting_dll" Guid="4a06c702-d72b-4bbc-895a-3f31802318ca" Directory="INSTALLDIR">
+      <Component Id="Comp_PdfSharp_Charting_dll" Guid="ec7f8ca0-5e01-4e7e-b6a4-ad766ab2b5c9" Directory="INSTALLDIR">
         <File Id="File_PdfSharp_Charting_dll" Source="$(var.PublishDir)\PdfSharp.Charting.dll" />
       </Component>
-      <Component Id="Comp_PdfSharp_Cryptography_dll" Guid="443f08d8-e980-4f4b-b801-ca255b6f2993" Directory="INSTALLDIR">
+      <Component Id="Comp_PdfSharp_Cryptography_dll" Guid="b057fb8e-ca2d-4a17-a459-5668eed78319" Directory="INSTALLDIR">
         <File Id="File_PdfSharp_Cryptography_dll" Source="$(var.PublishDir)\PdfSharp.Cryptography.dll" />
       </Component>
-      <Component Id="Comp_PdfSharp_dll" Guid="4b6e06e1-1c91-4467-bf02-e03d3dd1740d" Directory="INSTALLDIR">
+      <Component Id="Comp_PdfSharp_dll" Guid="7b7e1c24-1a35-401d-8ccd-52fd26ae4a9c" Directory="INSTALLDIR">
         <File Id="File_PdfSharp_dll" Source="$(var.PublishDir)\PdfSharp.dll" />
       </Component>
-      <Component Id="Comp_PdfSharp_Quality_dll" Guid="0140a827-e00e-4b8c-8073-76590cb510d9" Directory="INSTALLDIR">
+      <Component Id="Comp_PdfSharp_Quality_dll" Guid="ad09f5c9-b2cc-4317-80c6-ef50d029dda8" Directory="INSTALLDIR">
         <File Id="File_PdfSharp_Quality_dll" Source="$(var.PublishDir)\PdfSharp.Quality.dll" />
       </Component>
-      <Component Id="Comp_PdfSharp_Shared_dll" Guid="b2218b0a-9e11-442b-9810-16d7773030d8" Directory="INSTALLDIR">
+      <Component Id="Comp_PdfSharp_Shared_dll" Guid="979cf597-32a7-45a7-993e-0ada792bfe62" Directory="INSTALLDIR">
         <File Id="File_PdfSharp_Shared_dll" Source="$(var.PublishDir)\PdfSharp.Shared.dll" />
       </Component>
-      <Component Id="Comp_PdfSharp_Snippets_dll" Guid="b70797c7-047b-4309-9960-07d79f07ffa9" Directory="INSTALLDIR">
+      <Component Id="Comp_PdfSharp_Snippets_dll" Guid="06ad281d-fca7-448b-9ac0-b665721cbf76" Directory="INSTALLDIR">
         <File Id="File_PdfSharp_Snippets_dll" Source="$(var.PublishDir)\PdfSharp.Snippets.dll" />
       </Component>
-      <Component Id="Comp_PdfSharp_System_dll" Guid="93eb0369-e913-4a9b-9392-eb8d855c6f8f" Directory="INSTALLDIR">
+      <Component Id="Comp_PdfSharp_System_dll" Guid="1f1638d6-cc4e-49bb-8c5b-593b0830de79" Directory="INSTALLDIR">
         <File Id="File_PdfSharp_System_dll" Source="$(var.PublishDir)\PdfSharp.System.dll" />
       </Component>
-      <Component Id="Comp_PdfSharp_WPFonts_dll" Guid="86f10c86-136a-48e8-9207-ff97fdaf35f0" Directory="INSTALLDIR">
+      <Component Id="Comp_PdfSharp_WPFonts_dll" Guid="5def8a87-a927-4499-b34c-a88b74087a4e" Directory="INSTALLDIR">
         <File Id="File_PdfSharp_WPFonts_dll" Source="$(var.PublishDir)\PdfSharp.WPFonts.dll" />
       </Component>
-      <Component Id="Comp_SixLabors_ImageSharp_dll" Guid="5be1dcea-88f3-4d7f-a994-8e3c43500d79" Directory="INSTALLDIR">
+      <Component Id="Comp_SixLabors_ImageSharp_dll" Guid="81e59e89-5933-4b32-a434-587189c3f63e" Directory="INSTALLDIR">
         <File Id="File_SixLabors_ImageSharp_dll" Source="$(var.PublishDir)\SixLabors.ImageSharp.dll" />
       </Component>
-      <Component Id="Comp_Spectre_Console_Cli_dll" Guid="3d8be949-44d7-4e48-a99e-00fa2aeae89f" Directory="INSTALLDIR">
+      <Component Id="Comp_Spectre_Console_Cli_dll" Guid="abb747fe-90a1-4e77-8ed8-fde1be48125e" Directory="INSTALLDIR">
         <File Id="File_Spectre_Console_Cli_dll" Source="$(var.PublishDir)\Spectre.Console.Cli.dll" />
       </Component>
-      <Component Id="Comp_Spectre_Console_dll" Guid="6ef9df0a-66a4-4113-8320-2ed66701d202" Directory="INSTALLDIR">
+      <Component Id="Comp_Spectre_Console_dll" Guid="607b5055-0300-43f1-8e05-fa84f901f278" Directory="INSTALLDIR">
         <File Id="File_Spectre_Console_dll" Source="$(var.PublishDir)\Spectre.Console.dll" />
       </Component>
-      <Component Id="Comp_SymSpell_dll" Guid="41c12cce-21a0-41a7-ba06-84e0b98dc717" Directory="INSTALLDIR">
+      <Component Id="Comp_SymSpell_dll" Guid="09c5685e-fa28-4f6b-9bda-ef8749c9dda8" Directory="INSTALLDIR">
         <File Id="File_SymSpell_dll" Source="$(var.PublishDir)\SymSpell.dll" />
       </Component>
-      <Component Id="Comp_System_Security_Cryptography_Pkcs_dll" Guid="65117bb5-8fcb-4ba4-bc1e-492b071817b5" Directory="INSTALLDIR">
+      <Component Id="Comp_System_Security_Cryptography_Pkcs_dll" Guid="a4920e85-d04a-45b1-b92b-9d55aa20f8d5" Directory="INSTALLDIR">
         <File Id="File_System_Security_Cryptography_Pkcs_dll" Source="$(var.PublishDir)\System.Security.Cryptography.Pkcs.dll" />
       </Component>
-      <Component Id="Comp_Tesseract_dll" Guid="6d25234e-ad75-4b54-a017-5d6710e370e1" Directory="INSTALLDIR">
+      <Component Id="Comp_Tesseract_dll" Guid="a6f6990d-de22-4e5e-9c81-8615c3dad7f4" Directory="INSTALLDIR">
         <File Id="File_Tesseract_dll" Source="$(var.PublishDir)\Tesseract.dll" />
       </Component>
-      <Component Id="Comp_de_Spectre_Console_Cli_resources_dll" Guid="5b64d2e7-508c-413a-aadf-c2225ae1ed80" Directory="Dir_de">
+      <Component Id="Comp_de_Spectre_Console_Cli_resources_dll" Guid="0436b37c-37ef-423c-b121-b11b3cf9ceaf" Directory="Dir_de">
         <File Id="File_de_Spectre_Console_Cli_resources_dll" Source="$(var.PublishDir)\de\Spectre.Console.Cli.resources.dll" />
       </Component>
-      <Component Id="Comp_dict_dict_txt" Guid="1712016c-aab0-4f96-becd-a10c7775606c" Directory="Dir_dict">
+      <Component Id="Comp_dict_dict_txt" Guid="7c54666c-16c8-46d7-a39a-26835a3f507d" Directory="Dir_dict">
         <File Id="File_dict_dict_txt" Source="$(var.PublishDir)\dict\dict.txt" />
       </Component>
-      <Component Id="Comp_es_Spectre_Console_Cli_resources_dll" Guid="fac01ff8-c9fa-453c-9f8d-c52d05ca4f96" Directory="Dir_es">
+      <Component Id="Comp_es_Spectre_Console_Cli_resources_dll" Guid="6abc9950-4df3-4e5b-baca-c7e8c2b07171" Directory="Dir_es">
         <File Id="File_es_Spectre_Console_Cli_resources_dll" Source="$(var.PublishDir)\es\Spectre.Console.Cli.resources.dll" />
       </Component>
-      <Component Id="Comp_fonts_DejaVuSans_ttf" Guid="2e52bbff-4c63-4eec-9367-b1811c1dd8b4" Directory="Dir_fonts">
-        <File Id="File_fonts_DejaVuSans_ttf" Source="$(var.PublishDir)\fonts\DejaVuSans.ttf" KeyPath="yes" Language="1033" />
+      <Component Id="Comp_fonts_DejaVuSans_ttf" Guid="1078b52a-de41-4033-bc8e-c4939fda69cf" Directory="Dir_fonts">
+        <File Id="File_fonts_DejaVuSans_ttf" Source="$(var.PublishDir)\fonts\DejaVuSans.ttf" />
       </Component>
-      <Component Id="Comp_fr_Spectre_Console_Cli_resources_dll" Guid="0ae2e4c5-f001-40af-8313-30a089ecb5ef" Directory="Dir_fr">
+      <Component Id="Comp_fr_Spectre_Console_Cli_resources_dll" Guid="04cde8ab-2d55-4b31-b179-cc37033e4d36" Directory="Dir_fr">
         <File Id="File_fr_Spectre_Console_Cli_resources_dll" Source="$(var.PublishDir)\fr\Spectre.Console.Cli.resources.dll" />
       </Component>
-      <Component Id="Comp_it_Spectre_Console_Cli_resources_dll" Guid="4341ae2c-2a80-435a-b418-88513594c96b" Directory="Dir_it">
+      <Component Id="Comp_it_Spectre_Console_Cli_resources_dll" Guid="8ce37ae1-f0cd-47eb-a6f7-59c192465236" Directory="Dir_it">
         <File Id="File_it_Spectre_Console_Cli_resources_dll" Source="$(var.PublishDir)\it\Spectre.Console.Cli.resources.dll" />
       </Component>
-      <Component Id="Comp_ja_Spectre_Console_Cli_resources_dll" Guid="7e96980c-b367-40a0-ab0f-ef4aa5cc0b9b" Directory="Dir_ja">
+      <Component Id="Comp_ja_Spectre_Console_Cli_resources_dll" Guid="a305c6bd-2e3a-48ac-b4fb-889540edeb14" Directory="Dir_ja">
         <File Id="File_ja_Spectre_Console_Cli_resources_dll" Source="$(var.PublishDir)\ja\Spectre.Console.Cli.resources.dll" />
       </Component>
-      <Component Id="Comp_ko_Spectre_Console_Cli_resources_dll" Guid="fe50c4c4-7d1c-4de2-9be3-b3bd854a64f6" Directory="Dir_ko">
+      <Component Id="Comp_ko_Spectre_Console_Cli_resources_dll" Guid="af58b9c1-8cc2-4b39-9567-13253a367edb" Directory="Dir_ko">
         <File Id="File_ko_Spectre_Console_Cli_resources_dll" Source="$(var.PublishDir)\ko\Spectre.Console.Cli.resources.dll" />
       </Component>
-      <Component Id="Comp_pt_Spectre_Console_Cli_resources_dll" Guid="6cbc841d-af88-446f-85e5-c5af0c81ae5f" Directory="Dir_pt">
+      <Component Id="Comp_pt_Spectre_Console_Cli_resources_dll" Guid="493e6bb7-7f14-429d-b0e8-53d0f2b00d20" Directory="Dir_pt">
         <File Id="File_pt_Spectre_Console_Cli_resources_dll" Source="$(var.PublishDir)\pt\Spectre.Console.Cli.resources.dll" />
       </Component>
-      <Component Id="Comp_ru_Spectre_Console_Cli_resources_dll" Guid="77177726-42a3-4a3b-ba18-3f8009983629" Directory="Dir_ru">
+      <Component Id="Comp_ru_Spectre_Console_Cli_resources_dll" Guid="b660d503-4628-47f5-b2e6-3fe6a0f358b4" Directory="Dir_ru">
         <File Id="File_ru_Spectre_Console_Cli_resources_dll" Source="$(var.PublishDir)\ru\Spectre.Console.Cli.resources.dll" />
       </Component>
-      <Component Id="Comp_sv_Spectre_Console_Cli_resources_dll" Guid="535c3b6a-acc0-4efe-af89-8958c22f9e2f" Directory="Dir_sv">
+      <Component Id="Comp_sv_Spectre_Console_Cli_resources_dll" Guid="ce13758b-9797-40e7-9a5f-5bed00f9b5f0" Directory="Dir_sv">
         <File Id="File_sv_Spectre_Console_Cli_resources_dll" Source="$(var.PublishDir)\sv\Spectre.Console.Cli.resources.dll" />
       </Component>
-      <Component Id="Comp_tessdata_pol_traineddata" Guid="f7bd9b31-1b9f-4838-9d7f-b0a407747e17" Directory="Dir_tessdata">
+      <Component Id="Comp_tessdata_pol_traineddata" Guid="b3bfe5c1-7687-4e12-8d58-babd79a6831d" Directory="Dir_tessdata">
         <File Id="File_tessdata_pol_traineddata" Source="$(var.PublishDir)\tessdata\pol.traineddata" />
       </Component>
-      <Component Id="Comp_x64_leptonica_1_82_0_dll" Guid="6f6892cf-8e09-44c5-8254-6b10c4e89f8a" Directory="Dir_x64">
+      <Component Id="Comp_x64_leptonica_1_82_0_dll" Guid="ee9c538a-be22-4a9b-a2fb-8882ac3539d7" Directory="Dir_x64">
         <File Id="File_x64_leptonica_1_82_0_dll" Source="$(var.PublishDir)\x64\leptonica-1.82.0.dll" />
       </Component>
-      <Component Id="Comp_x64_tesseract50_dll" Guid="3f454e10-e09a-403d-a671-6d160f141570" Directory="Dir_x64">
+      <Component Id="Comp_x64_tesseract50_dll" Guid="bb26e125-8d0d-49e1-9a78-3f1964080e66" Directory="Dir_x64">
         <File Id="File_x64_tesseract50_dll" Source="$(var.PublishDir)\x64\tesseract50.dll" />
       </Component>
-      <Component Id="Comp_x86_leptonica_1_82_0_dll" Guid="9e955b9e-947b-4f90-a781-d1a598fb7a8d" Directory="Dir_x86">
+      <Component Id="Comp_x86_leptonica_1_82_0_dll" Guid="4b8bc371-2839-422c-a2a9-78820b46f8b9" Directory="Dir_x86">
         <File Id="File_x86_leptonica_1_82_0_dll" Source="$(var.PublishDir)\x86\leptonica-1.82.0.dll" />
       </Component>
-      <Component Id="Comp_x86_tesseract50_dll" Guid="73cd57b7-deee-4fb9-be02-5f5e30a6bedc" Directory="Dir_x86">
+      <Component Id="Comp_x86_tesseract50_dll" Guid="30d2d96b-f657-48c5-b2d0-ed5e73d399bb" Directory="Dir_x86">
         <File Id="File_x86_tesseract50_dll" Source="$(var.PublishDir)\x86\tesseract50.dll" />
       </Component>
-      <Component Id="Comp_zh_Hans_Spectre_Console_Cli_resources_dll" Guid="50a35eba-3b93-47f9-ac49-82c6860b86be" Directory="Dir_zh_Hans">
+      <Component Id="Comp_zh_Hans_Spectre_Console_Cli_resources_dll" Guid="f4f99164-e645-42e2-b402-8d94216a3815" Directory="Dir_zh_Hans">
         <File Id="File_zh_Hans_Spectre_Console_Cli_resources_dll" Source="$(var.PublishDir)\zh-Hans\Spectre.Console.Cli.resources.dll" />
       </Component>
     </ComponentGroup>

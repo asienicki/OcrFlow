@@ -22,6 +22,8 @@
       <ComponentRef Id="PathEnvironmentVariable" />
     </Feature>
 
+    <Icon Id="AppIcon" SourceFile="Assets\ocrflow.ico" />
+    <Property Id="ARPPRODUCTICON" Value="AppIcon" />
   </Package>
 
   <!-- Dodaj katalog instalacji do PATH użytkownika -->
