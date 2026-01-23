@@ -44,7 +44,7 @@ jobs:
         run: |
           Compress-Archive `
             -Path "publish\*" `
-            -DestinationPath "OcrFlow-win-x64.zip"
+            -DestinationPath "OcrFlow-win-x64-v$v.zip"
 
       # 4️⃣ Generuj PublishFiles.wxs
       - name: Generate WiX file list
@@ -62,10 +62,18 @@ jobs:
           -p:PublishDir=..\..\publish
           -p:ProductVersion=${{ steps.version.outputs.version }}
 
+      - name: Rename MSI
+        run: |
+          $v = "${{ steps.version.outputs.version }}"
+          Rename-Item `
+            "installer/OcrFlow.Installer/bin/x64/Release/OcrFlow.Installer.msi" `
+            "OcrFlow.Installer-v$v.msi"
+
+
       # 6️⃣ GitHub Release (ZIP + MSI)
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
             OcrFlow-win-x64.zip
-            installer/OcrFlow.Installer/bin/x64/Release/*.msi
+            OcrFlow.Installer-v${{ steps.version.outputs.version }}.msi
