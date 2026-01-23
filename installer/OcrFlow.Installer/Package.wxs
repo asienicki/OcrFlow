@@ -17,8 +17,23 @@
 
     <Feature Id="MainFeature" Title="OcrFlow" Level="1">
       <ComponentGroupRef Id="PublishFiles" />
+      <ComponentRef Id="PathEnvironmentVariable" />
     </Feature>
 
   </Package>
 
+  <!-- Dodaj katalog instalacji do PATH użytkownika -->
+  <Fragment>
+    <Component Id="PathEnvironmentVariable" Guid="a1b2c3d4-5678-90ab-cdef-123456789abc" Directory="INSTALLDIR">
+      <Environment
+        Id="PATH"
+        Name="PATH"
+        Value="[INSTALLDIR]"
+        Permanent="no"
+        Part="last"
+        Action="set"
+        System="no" />
+    </Component>
+  </Fragment>
+  
 </Wix>
