@@ -8,6 +8,8 @@
     UpgradeCode="147e6466-4950-481b-a068-61dfec15ffad"
     Language="1033">
 
+    <MediaTemplate EmbedCab="yes" />
+    
     <MajorUpgrade
       DowngradeErrorMessage="A newer version of OcrFlow is already installed." />
 
