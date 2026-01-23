@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Fragment>
+    <ComponentGroup Id="PublishFiles" Directory="INSTALLDIR">
+      <Component Id="Comp_1" Guid="36a6422b-e3e4-430b-8f87-22dc46739dc4">
+        <File Id="File_1" Source="$(var.PublishDir)\Microsoft.Extensions.DependencyInjection.Abstractions.dll" />
+      </Component>
+      <Component Id="Comp_2" Guid="724e21da-31fb-4831-8886-7ddb8cee3a3e">
+        <File Id="File_2" Source="$(var.PublishDir)\Microsoft.Extensions.Logging.Abstractions.dll" />
+      </Component>
+      <Component Id="Comp_3" Guid="56894a58-7905-41fa-8a35-ed8f680141c8">
+        <File Id="File_3" Source="$(var.PublishDir)\OcrFlow.Core.dll" />
+      </Component>
+      <Component Id="Comp_4" Guid="bea713b0-aecf-4c8a-a453-38559a2fc8f3">
+        <File Id="File_4" Source="$(var.PublishDir)\OcrFlow.Core.pdb" />
+      </Component>
+      <Component Id="Comp_5" Guid="fb9e9d0d-0056-4c2a-a080-9def157b9d7e">
+        <File Id="File_5" Source="$(var.PublishDir)\OcrFlow.deps.json" />
+      </Component>
+      <Component Id="Comp_6" Guid="262b1085-27dc-46e7-9cc0-37594f55282a">
+        <File Id="File_6" Source="$(var.PublishDir)\OcrFlow.dll" />
+      </Component>
+      <Component Id="Comp_7" Guid="0cec9739-f61d-4c85-9b28-63071a562b95">
+        <File Id="File_7" Source="$(var.PublishDir)\OcrFlow.exe" KeyPath="yes" />
+      </Component>
+      <Component Id="Comp_8" Guid="b5786a51-93ea-4293-a600-9dca2bc1fa67">
+        <File Id="File_8" Source="$(var.PublishDir)\OcrFlow.Infrastructure.dll" />
+      </Component>
+      <Component Id="Comp_9" Guid="fb271b66-af5f-4beb-b50f-e1c26063ebab">
+        <File Id="File_9" Source="$(var.PublishDir)\OcrFlow.Infrastructure.pdb" />
+      </Component>
+      <Component Id="Comp_10" Guid="e490edfb-abb2-4cb0-b808-83d737d02280">
+        <File Id="File_10" Source="$(var.PublishDir)\OcrFlow.pdb" />
+      </Component>
+      <Component Id="Comp_11" Guid="916c4820-a401-4cea-9086-60a0d3ac035a">
+        <File Id="File_11" Source="$(var.PublishDir)\OcrFlow.Resources.dll" />
+      </Component>
+      <Component Id="Comp_12" Guid="f018674d-3f14-4517-a2a9-423d3205bb37">
+        <File Id="File_12" Source="$(var.PublishDir)\OcrFlow.Resources.pdb" />
+      </Component>
+      <Component Id="Comp_13" Guid="5dabd480-326f-4a97-92aa-31112d0943cb">
+        <File Id="File_13" Source="$(var.PublishDir)\OcrFlow.runtimeconfig.json" />
+      </Component>
+      <Component Id="Comp_14" Guid="bee3d080-71eb-4980-852f-9f39cfc8fd7c">
+        <File Id="File_14" Source="$(var.PublishDir)\PdfSharp.BarCodes.dll" />
+      </Component>
+      <Component Id="Comp_15" Guid="e5c71c8d-9956-458e-933a-aefde01707f9">
+        <File Id="File_15" Source="$(var.PublishDir)\PdfSharp.Charting.dll" />
+      </Component>
+      <Component Id="Comp_16" Guid="76995784-6b24-4ec2-a658-c25666d1e269">
+        <File Id="File_16" Source="$(var.PublishDir)\PdfSharp.Cryptography.dll" />
+      </Component>
+      <Component Id="Comp_17" Guid="09915978-e325-4423-a62b-c01813dd7c00">
+        <File Id="File_17" Source="$(var.PublishDir)\PdfSharp.dll" />
+      </Component>
+      <Component Id="Comp_18" Guid="48dc6714-f28e-4e0d-bf92-e3f70b351032">
+        <File Id="File_18" Source="$(var.PublishDir)\PdfSharp.Quality.dll" />
+      </Component>
+      <Component Id="Comp_19" Guid="1424e81c-5cd5-4c4b-8c58-2521d9873fe7">
+        <File Id="File_19" Source="$(var.PublishDir)\PdfSharp.Shared.dll" />
+      </Component>
+      <Component Id="Comp_20" Guid="28987e60-e939-4963-afd2-3bc8df8cf667">
+        <File Id="File_20" Source="$(var.PublishDir)\PdfSharp.Snippets.dll" />
+      </Component>
+      <Component Id="Comp_21" Guid="29087d8f-2eba-4c51-ba97-e29847346155">
+        <File Id="File_21" Source="$(var.PublishDir)\PdfSharp.System.dll" />
+      </Component>
+      <Component Id="Comp_22" Guid="23b99ea9-8fd9-4f2c-a78f-9325160a200d">
+        <File Id="File_22" Source="$(var.PublishDir)\PdfSharp.WPFonts.dll" />
+      </Component>
+      <Component Id="Comp_23" Guid="40a8d31c-40ad-4581-9d43-4d99676bfd54">
+        <File Id="File_23" Source="$(var.PublishDir)\SixLabors.ImageSharp.dll" />
+      </Component>
+      <Component Id="Comp_24" Guid="7607994c-964f-4303-874c-e92f13f46417">
+        <File Id="File_24" Source="$(var.PublishDir)\Spectre.Console.Cli.dll" />
+      </Component>
+      <Component Id="Comp_25" Guid="fe111379-fca5-4db6-b3f1-55d3b005a210">
+        <File Id="File_25" Source="$(var.PublishDir)\Spectre.Console.dll" />
+      </Component>
+      <Component Id="Comp_26" Guid="37a3eb7e-33c4-4219-827a-a54ff5d6a264">
+        <File Id="File_26" Source="$(var.PublishDir)\SymSpell.dll" />
+      </Component>
+      <Component Id="Comp_27" Guid="f47df9ba-6c24-4f3c-b57e-e6f5149443fe">
+        <File Id="File_27" Source="$(var.PublishDir)\System.Security.Cryptography.Pkcs.dll" />
+      </Component>
+      <Component Id="Comp_28" Guid="e4ec33e3-af3b-49a2-a7b9-b1f8682164a3">
+        <File Id="File_28" Source="$(var.PublishDir)\Tesseract.dll" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+</Wix>

@@ -12,22 +12,11 @@
       DowngradeErrorMessage="A newer version of OcrFlow is already installed." />
 
     <StandardDirectory Id="ProgramFiles64Folder">
-      <Directory Id="INSTALLDIR" Name="OcrFlow">
-        <Component
-          Id="MainExecutable"
-          Guid="25289f82-85fc-493d-9a7d-a4f9b78b125e">
-
-          <File
-            Id="OcrFlowExe"
-            Source="$(var.PublishDir)\OcrFlow.exe"
-            KeyPath="yes" />
-
-        </Component>
-      </Directory>
+      <Directory Id="INSTALLDIR" Name="OcrFlow" />
     </StandardDirectory>
 
     <Feature Id="MainFeature" Title="OcrFlow" Level="1">
-      <ComponentRef Id="MainExecutable" />
+      <ComponentGroupRef Id="PublishFiles" />
     </Feature>
 
   </Package>

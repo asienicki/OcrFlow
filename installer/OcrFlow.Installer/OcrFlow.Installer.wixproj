@@ -3,6 +3,9 @@
   <PropertyGroup>
     <OutputType>Package</OutputType>
     <Platform>x64</Platform>
+    
+    <!-- WYŁĄCZ automatyczne dodawanie plików -->
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
 
     <!-- fallback values -->
     <ProductVersion Condition="'$(ProductVersion)' == ''">1.0.0</ProductVersion>
@@ -17,6 +20,12 @@
 
   <ItemGroup>
     <PackageReference Include="WixToolset.UI.wixext" Version="4.0.0" />
+  </ItemGroup>
+
+  <!-- Jawnie wymień TYLKO te pliki które chcesz skompilować -->
+  <ItemGroup>
+    <Compile Include="Package.wxs" />
+    <Compile Include="PublishFiles.wxs" />
   </ItemGroup>
 
 </Project>
