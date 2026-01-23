@@ -68,4 +68,4 @@ jobs:
         with:
           files: |
             OcrFlow-win-x64.zip
-            installer/OcrFlow.Installer/bin/Release/*.msi
+            installer/OcrFlow.Installer/bin/x64/Release/*.msi
