@@ -1,0 +1,22 @@
+<Project Sdk="WixToolset.Sdk/4.0.0">
+
+  <PropertyGroup>
+    <OutputType>Package</OutputType>
+    <Platform>x64</Platform>
+
+    <!-- fallback values -->
+    <ProductVersion Condition="'$(ProductVersion)' == ''">1.0.0</ProductVersion>
+    <PublishDir Condition="'$(PublishDir)' == ''">$(MSBuildThisFileDirectory)..\..\publish</PublishDir>
+
+    <!-- mapowanie MSBuild -> WiX -->
+    <DefineConstants>
+      ProductVersion=$(ProductVersion);
+      PublishDir=$(PublishDir)
+    </DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WixToolset.UI.wixext" Version="4.0.0" />
+  </ItemGroup>
+
+</Project>

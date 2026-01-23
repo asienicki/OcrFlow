@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+
+  <Package
+    Name="OcrFlow"
+    Manufacturer="OcrFlow"
+    Version="$(var.ProductVersion)"
+    UpgradeCode="147e6466-4950-481b-a068-61dfec15ffad"
+    Language="1033">
+
+    <MajorUpgrade
+      DowngradeErrorMessage="A newer version of OcrFlow is already installed." />
+
+    <StandardDirectory Id="ProgramFiles64Folder">
+      <Directory Id="INSTALLDIR" Name="OcrFlow">
+        <Component
+          Id="MainExecutable"
+          Guid="25289f82-85fc-493d-9a7d-a4f9b78b125e">
+
+          <File
+            Id="OcrFlowExe"
+            Source="$(var.PublishDir)\OcrFlow.exe"
+            KeyPath="yes" />
+
+        </Component>
+      </Directory>
+    </StandardDirectory>
+
+    <Feature Id="MainFeature" Title="OcrFlow" Level="1">
+      <ComponentRef Id="MainExecutable" />
+    </Feature>
+
+  </Package>
+
+</Wix>
