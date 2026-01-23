@@ -59,7 +59,7 @@ jobs:
         run: >
           dotnet build installer/OcrFlow.Installer/OcrFlow.Installer.wixproj
           -c Release
-          -p:PublishDir=publish
+          -p:PublishDir=..\..\publish
           -p:ProductVersion=${{ steps.version.outputs.version }}
 
       # 6️⃣ GitHub Release (ZIP + MSI)
