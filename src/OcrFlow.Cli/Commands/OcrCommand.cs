@@ -1,20 +1,19 @@
-﻿using OcrFlow.Application.Services;
+﻿using System.Diagnostics;
+using OcrFlow.Application.Services;
 using OcrFlow.Cli.Bootstrap;
 using OcrFlow.Cli.Ui;
 using OcrFlow.Core.Flow.Models;
 using OcrFlow.Core.Output.Abstractions;
-using Spectre.Console;
 using Spectre.Console.Cli;
-using System.Diagnostics;
 
 namespace OcrFlow.Cli.Commands;
 
 public sealed class OcrCommand : AsyncCommand<OcrCommandSettings>
 {
-    private readonly IOcrApplicationService _ocr;
-    private readonly OcrRunContext _context;
     private readonly OcrRunOptionsBuilder _builder;
+    private readonly OcrRunContext _context;
     private readonly IEnumerable<IOutputFinalizer> _finalizers;
+    private readonly IOcrApplicationService _ocr;
 
     public OcrCommand(
         IOcrApplicationService ocr,
@@ -31,19 +30,16 @@ public sealed class OcrCommand : AsyncCommand<OcrCommandSettings>
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         OcrCommandSettings settings,
-        CancellationToken ct)
+        CancellationToken cancellationToken)
     {
         var options = _builder.Build(settings);
         _context.Initialize(options);
         OcrOptionsPrinter.Print(options);
 
-        await ProcessFilesAsync(options, ct);
+        await ProcessFilesAsync(options, cancellationToken);
 
-        foreach (var finalizer in _finalizers)
-        {
-            if (finalizer.ShouldRun())
-                await finalizer.FinalizeAsync(ct);
-        }
+        foreach (var finalizer in _finalizers.Where(x => x.ShouldRun()))
+            await finalizer.FinalizeAsync(cancellationToken);
 
         return 0;
     }
@@ -59,7 +55,7 @@ public sealed class OcrCommand : AsyncCommand<OcrCommandSettings>
             .ToList();
 
         using var reporter = new SpectreProgressReporter();
-        var uiTask = Task.Run(reporter.RunUi);
+        var uiTask = Task.Run(reporter.RunUi, ct);
 
         try
         {
@@ -76,8 +72,8 @@ public sealed class OcrCommand : AsyncCommand<OcrCommandSettings>
                         item.file,
                         item.pageNo,
                         options,
-                        token,
-                        reporter);
+                        reporter,
+                        token);
                 });
         }
         finally
@@ -91,8 +87,8 @@ public sealed class OcrCommand : AsyncCommand<OcrCommandSettings>
         string file,
         int pageNo,
         OcrRunOptions options,
-        CancellationToken ct,
-        SpectreProgressReporter reporter)
+        SpectreProgressReporter reporter,
+        CancellationToken ct)
     {
         var sw = Stopwatch.StartNew();
         reporter.PageStarted(pageNo, file);
@@ -105,7 +101,7 @@ public sealed class OcrCommand : AsyncCommand<OcrCommandSettings>
                 Languages = options.Languages
             };
 
-            await _ocr.ProcessAsync(input, ct);
+            _ = await _ocr.ProcessAsync(input, ct);
 
             reporter.PageCompleted(pageNo, sw.ElapsedMilliseconds);
         }

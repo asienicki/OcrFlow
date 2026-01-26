@@ -5,30 +5,35 @@ This file lists third-party open-source libraries used by **OcrFlow** and their 
 ---
 
 ## PDFsharp
+
 License: MIT  
 Project URL: https://github.com/empira/PDFsharp
 
 ---
 
 ## SixLabors.ImageSharp
+
 License: Apache License 2.0  
 Project URL: https://github.com/SixLabors/ImageSharp
 
 ---
 
 ## SymSpell
+
 License: MIT  
 Project URL: https://github.com/wolfgarbe/SymSpell
 
 ---
 
 ## Tesseract (C# wrapper)
+
 License: Apache License 2.0  
 Project URL: https://github.com/charlesw/tesseract
 
 ---
 
 ## Tesseract OCR Engine
+
 License: Apache License 2.0  
 Project URL: https://github.com/tesseract-ocr/tesseract
 
@@ -39,6 +44,7 @@ Project URL: https://github.com/tesseract-ocr/tesseract
 This project includes word frequency lists used for spell correction.
 
 ### Polish and English word lists
+
 Source: https://github.com/hermitdave/FrequencyWords  
 Dataset: 2018 frequency lists  
 License: MIT

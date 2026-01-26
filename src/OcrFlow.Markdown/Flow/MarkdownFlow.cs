@@ -1,57 +1,84 @@
-﻿using OcrFlow.Core.Flow.Abstractions;
-using OcrFlow.Markdown.Flow.Abstractions;
+﻿using OcrFlow.Markdown.Flow.Abstractions;
 using OcrFlow.Markdown.Flow.Steps;
 
-namespace OcrFlow.Markdown.Flow
+namespace OcrFlow.Markdown.Flow;
+
+public sealed class MarkdownFlow : IMarkdownFlow
 {
+    private readonly List<ITextStep> _steps = [];
 
-    public sealed class MarkdownFlow : IMarkdownFlow
+    private MarkdownFlow()
     {
-        private readonly List<ITextStep> _steps = [];
+    }
 
-        private MarkdownFlow() { }
+    public IMarkdownFlow RomanNumerals()
+    {
+        return Add(new RomanNumeralStep());
+    }
 
-        public static MarkdownFlow Start() => new();
+    public IMarkdownFlow TextNormalization()
+    {
+        return Add(new TextNormalizationStep());
+    }
 
-        public IMarkdownFlow RomanNumerals()
-            => Add(new RomanNumeralStep());
+    public IMarkdownFlow SpellCorrection(string dictPath)
+    {
+        return Add(new SpellCorrectionStep(dictPath));
+    }
 
-        public IMarkdownFlow TextNormalization()
-            => Add(new TextNormalizationStep());
+    public IMarkdownFlow GarbageRemove()
+    {
+        return Add(new GarbageRemoveStep());
+    }
 
-        public IMarkdownFlow SpellCorrection(string dictPath)
-            => Add(new SpellCorrectionStep(dictPath));
+    public IMarkdownFlow TitleMerge()
+    {
+        return Add(new TitleMergeStep());
+    }
 
-        public IMarkdownFlow GarbageRemove()
-            => Add(new GarbageRemoveStep());
+    public IMarkdownFlow SectionLabels()
+    {
+        return Add(new SectionLabelStep());
+    }
 
-        public IMarkdownFlow TitleMerge()
-            => Add(new TitleMergeStep());
+    public IMarkdownFlow JoinLines()
+    {
+        return Add(new JoinLineStep());
+    }
 
-        public IMarkdownFlow SectionLabels()
-            => Add(new SectionLabelStep());
+    public IMarkdownFlow Identifiers()
+    {
+        return Add(new IdentifierStep());
+    }
 
-        public IMarkdownFlow JoinLines()
-            => Add(new JoinLineStep());
-        public IMarkdownFlow Identifiers()
-            => Add(new IdentifierStep());
+    public IMarkdownFlow Headers()
+    {
+        return Add(new HeaderStep());
+    }
 
-        public IMarkdownFlow Headers()
-            => Add(new HeaderStep());
+    public IMarkdownFlow PlainText()
+    {
+        return Add(new PlainTextStep());
+    }
 
-        public IMarkdownFlow PlainText()
-            => Add(new PlainTextStep());
+    public IMarkdownFlow CommaSpacing()
+    {
+        return Add(new CommaSpacingStep());
+    }
 
-        public IMarkdownFlow CommaSpacing()
-            => Add(new CommaSpacingStep());
+    public TextProcess Build()
+    {
+        return new TextProcess(_steps);
+    }
 
-        private IMarkdownFlow Add(ITextStep step)
-        {
-            _steps.Add(step);
-            return this;
-        }
+    public static MarkdownFlow Start()
+    {
+        return new MarkdownFlow();
+    }
 
-        public TextProcess Build()
-            => new(_steps);
+    private IMarkdownFlow Add(ITextStep step)
+    {
+        _steps.Add(step);
+        return this;
     }
 }

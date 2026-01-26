@@ -1,12 +1,10 @@
 ﻿using OcrFlow.Core.Flow.Models;
 
-namespace OcrFlow.Core.Flow.Abstractions
+namespace OcrFlow.Core.Flow.Abstractions;
+
+public interface IOcrStep
 {
+    bool IsEnabled { get; }
 
-    public interface IOcrStep
-    {
-        bool IsEnabled { get; }
-
-        ValueTask ExecuteAsync(OcrState state, CancellationToken ct);
-    }
+    ValueTask ExecuteAsync(OcrState state, CancellationToken ct);
 }

@@ -9,7 +9,7 @@ public static class OcrCommandSettingsExtensions
         return new OcrRunOptions
         {
             InputDir = s.InputDir,
-            Languages = s.Lang.ResolveLanguages(),
+            Languages = s.Lang.ResolveLanguages() ?? Array.Empty<string>(),
             GenerateMarkdown = !s.NoMarkdown,
             GeneratePdf = !s.NoPdf,
             OutputDirectory = s.OutputDir ?? s.InputDir

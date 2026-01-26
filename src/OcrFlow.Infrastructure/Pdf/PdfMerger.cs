@@ -25,8 +25,8 @@ public static class PdfMerger
         foreach (var file in files)
         {
             using var src = PdfReader.Open(file, PdfDocumentOpenMode.Import);
-            for (int i = 0; i < src.PageCount; i++)
-                target.AddPage(src.Pages[i]);
+            for (var i = 0; i < src.PageCount; i++)
+                _ = target.AddPage(src.Pages[i]);
         }
 
         target.Save(outputFile);

@@ -1,9 +1,8 @@
-﻿namespace OcrFlow.Core.Flow.Models.Options
-{
-    public sealed class TesseractOptions
-    {
-        public IReadOnlyList<TessDataSource> DataSources { get; init; } = [];
+﻿namespace OcrFlow.Core.Flow.Models.Options;
 
-        public IReadOnlyList<string> DefaultLanguages { get; init; } = [];
-    }
+public sealed class TesseractOptions
+{
+    public IReadOnlyList<TessDataSource> DataSources { get; init; } = [];
+
+    public IReadOnlyList<string> DefaultLanguages { get; init; } = [];
 }

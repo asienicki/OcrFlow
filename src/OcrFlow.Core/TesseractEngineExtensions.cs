@@ -1,18 +1,17 @@
 ﻿using System.Runtime.InteropServices;
 using Tesseract;
 
-namespace OcrFlow.Core
-{
-    public static class TesseractEngineExtensions
-    {
-        public static void DisableTesseractLogs(this TesseractEngine engine)
-        {
-            var nullDevice =
-                RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-                    ? "nul"
-                    : "/dev/null";
+namespace OcrFlow.Core;
 
-            engine.SetVariable("debug_file", nullDevice);
-        }
+public static class TesseractEngineExtensions
+{
+    public static void DisableTesseractLogs(this TesseractEngine engine)
+    {
+        var nullDevice =
+            RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+                ? "nul"
+                : "/dev/null";
+
+        _ = engine.SetVariable("debug_file", nullDevice);
     }
 }

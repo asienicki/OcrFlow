@@ -9,27 +9,25 @@ public static class TableMarkdownExporter
         var list = pages.OrderBy(x => x.PageNo).ToList();
         var (count, avgMs) = ComputeSummary(list);
 
-        var sb = new StringBuilder();
-
-        sb.AppendLine("## OCR result");
-        sb.AppendLine();
-        sb.AppendLine($"- Pages: **{count}**");
-        sb.AppendLine($"- Avg OCR time: **{avgMs:F1} ms**");
-        sb.AppendLine();
-        sb.AppendLine("| # | File | Status | OCR ms |");
-        sb.AppendLine("|---|------|--------|--------|");
+        var sb = new StringBuilder()
+            .AppendLine("## OCR result")
+            .AppendLine()
+            .AppendLine($"- Pages: **{count}**")
+            .AppendLine($"- Avg OCR time: **{avgMs:F1} ms**")
+            .AppendLine()
+            .AppendLine("| # | File | Status | OCR ms |")
+            .AppendLine("|---|------|--------|--------|");
 
         foreach (var p in list)
-        {
-            sb.Append("| ")
-              .Append(p.PageNo).Append(" | ")
-              .Append(p.File).Append(" | ")
-              .Append(Clean(p.Status)).Append(" | ")
-              .Append(p.OcrMs == 0 ? "-" : p.OcrMs).AppendLine(" |");
-        }
+            _ = sb.Append("| ")
+                .Append(p.PageNo).Append(" | ")
+                .Append(p.File).Append(" | ")
+                .Append(Clean(p.Status)).Append(" | ")
+                .Append(p.OcrMs == 0 ? "-" : p.OcrMs).AppendLine(" |");
 
         File.WriteAllText(path, sb.ToString());
     }
+
     private static (int pages, double avgMs) ComputeSummary(IEnumerable<PageStatus> pages)
     {
         var done = pages.Where(p => p.OcrMs > 0).ToList();
@@ -41,9 +39,11 @@ public static class TableMarkdownExporter
     }
 
     private static string Clean(string status)
-        => status
+    {
+        return status
             .Replace("[green]", "")
             .Replace("[/]", "")
             .Replace("[yellow]", "")
             .Replace("[red]", "");
+    }
 }

@@ -10,14 +10,13 @@ internal static class OcrOptionsPrinter
             .Border(TableBorder.Rounded)
             .Title("[bold]OCR Run Options[/]")
             .AddColumn("Parameter")
-            .AddColumn("Value");
-
-        table.AddRow("InputDir", o.InputDir);
-        table.AddRow("Languages", string.Join(", ", o.Languages));
-        table.AddRow("Extensions", string.Join(", ", o.ImageExtensions));
-        table.AddRow("GeneratePdf", o.GeneratePdf.ToString());
-        table.AddRow("OnlyMarkdown", o.GenerateMarkdown.ToString());
-        table.AddRow("ProcessorCount", Environment.ProcessorCount.ToString());
+            .AddColumn("Value")
+            .AddRow("InputDir", o.InputDir)
+            .AddRow("Languages", string.Join(", ", o.Languages))
+            .AddRow("Extensions", string.Join(", ", o.ImageExtensions))
+            .AddRow("GeneratePdf", o.GeneratePdf.ToString())
+            .AddRow("OnlyMarkdown", o.GenerateMarkdown.ToString())
+            .AddRow("ProcessorCount", Environment.ProcessorCount.ToString());
 
         AnsiConsole.Write(
             new Panel(table)

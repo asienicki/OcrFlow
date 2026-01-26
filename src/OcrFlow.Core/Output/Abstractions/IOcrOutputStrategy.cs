@@ -1,13 +1,12 @@
 ﻿using OcrFlow.Core.Flow.Models;
 
-namespace OcrFlow.Core.Output.Abstractions
-{
-    public interface IOcrOutputStrategy
-    {
-        bool ShouldRun();
+namespace OcrFlow.Core.Output.Abstractions;
 
-        Task RunAsync(
-            OcrOutput output,
-            CancellationToken ct);
-    }
+public interface IOcrOutputStrategy
+{
+    bool ShouldRun();
+
+    Task RunAsync(
+        OcrOutput output,
+        CancellationToken ct);
 }

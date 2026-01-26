@@ -17,74 +17,77 @@ using OcrFlow.Pdf;
 using OcrFlow.Pdf.Output;
 using PdfSharp.Fonts;
 using Spectre.Console.Cli;
-using System.Reflection;
 
-AppDomain.CurrentDomain.UnhandledException += (_, e) =>
+internal static class Program
 {
-    if (e.ExceptionObject is Exception ex)
+    public static async Task<int> Main(string[] args)
     {
-        CrashReporter.Handle(ex);
+        AppDomain.CurrentDomain.UnhandledException += (_, e) =>
+        {
+            if (e.ExceptionObject is Exception ex)
+                CrashReporter.Handle(ex);
+        };
+
+        TaskScheduler.UnobservedTaskException += (_, e) =>
+        {
+            CrashReporter.Handle(e.Exception);
+            e.SetObserved();
+        };
+
+        try
+        {
+            GlobalFontSettings.FontResolver = new PdfFontResolver();
+            SpectraConsoleHelper.PrintHeader();
+
+            IServiceCollection services = new ServiceCollection();
+
+            _ = Host.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration(config =>
+                {
+                    _ = config
+                        .AddJsonFile(Path.Combine(AppContext.BaseDirectory, "appsettings.json"), false)
+                        .AddJsonFile(
+                            Path.Combine(
+                                AppContext.BaseDirectory,
+                                $"appsettings.{Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")}.json"),
+                            true)
+                        .AddEnvironmentVariables();
+                })
+                .ConfigureServices((ctx, _) =>
+                {
+                    _ = services.Configure<OcrFlowOptions>(
+                        ctx.Configuration.GetSection("OcrFlow"));
+
+                    _ = services
+                        .AddOcrCore()
+                        .AddOcrMarkdown()
+                        .AddOcrApplication()
+                        .AddOcrPdf();
+
+                    _ = services.AddTransient<OcrCommand>();
+                    _ = services.AddSingleton<OcrRunContext>();
+                    _ = services.AddSingleton<OcrRunOptionsBuilder>();
+
+                    _ = services.AddSingleton<IOutputFinalizer, PdfMergeFinalizer>();
+                    _ = services.AddSingleton<IOutputFinalizer, MarkdownMergeFinalizer>();
+                })
+                .Build();
+
+            var registrar = new TypeRegistrar(services);
+            var app = new CommandApp<OcrCommand>(registrar);
+
+            app.Configure(cfg =>
+            {
+                _ = cfg.SetApplicationName("ocrpdf");
+                _ = cfg.ValidateExamples();
+            });
+
+            return await app.RunAsync(args);
+        }
+        catch (Exception ex)
+        {
+            CrashReporter.Handle(ex);
+            return -1;
+        }
     }
-};
-
-TaskScheduler.UnobservedTaskException += (_, e) =>
-{
-    CrashReporter.Handle(e.Exception);
-    e.SetObserved();
-};
-
-try
-{
-    GlobalFontSettings.FontResolver = new PdfFontResolver();
-
-    SpectraConsoleHelper.PrintHeader();
-
-    IServiceCollection services = new ServiceCollection();
-
-    var host = Host.CreateDefaultBuilder(args)
-        .ConfigureAppConfiguration(config =>
-        {
-            config
-            .AddJsonFile(Path.Combine(AppContext.BaseDirectory, "appsettings.json"), optional: false)
-            .AddJsonFile(Path.Combine(AppContext.BaseDirectory, $"appsettings.{Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")}.json"), optional: true)
-            .AddEnvironmentVariables();
-        })
-        .ConfigureServices((ctx, _) =>
-        {
-            services.Configure<OcrFlowOptions>(
-                ctx.Configuration.GetSection("OcrFlow"));
-
-            services
-                    .AddOcrCore()
-                    .AddOcrMarkdown()
-                    .AddOcrApplication()
-                    .AddOcrPdf();
-
-            services.AddTransient<OcrCommand>();
-
-            services.Configure<OcrFlowOptions>(ctx.Configuration.GetSection("OcrFlow"));
-
-            services.AddSingleton<OcrRunContext>();
-            services.AddSingleton<OcrRunOptionsBuilder>();
-
-            services.AddSingleton<IOutputFinalizer, PdfMergeFinalizer>();
-            services.AddSingleton<IOutputFinalizer, MarkdownMergeFinalizer>();
-        })
-        .Build();
-
-    var registrar = new TypeRegistrar(services);
-    var app = new CommandApp<OcrCommand>(registrar);
-
-    app.Configure(cfg =>
-    {
-        cfg.SetApplicationName("ocrpdf");
-        cfg.ValidateExamples();
-    });
-
-    return app.Run(args);
-}
-catch (Exception ex)
-{
-    CrashReporter.Handle(ex);
-    return -1;
 }

@@ -1,15 +1,14 @@
-﻿namespace OcrFlow.Core.Flow.Models
+﻿namespace OcrFlow.Core.Flow.Models;
+
+public sealed record OcrInput
 {
-    public sealed record OcrInput
-    {
-        public string ImagePath { get; init; } = default!;
+    public string ImagePath { get; init; } = default!;
 
 
-        /// <summary>
-        ///     null = auto (z configu)
-        ///     ["pol"] = wymuś
-        ///     ["*"] = wszystkie
-        /// </summary>
-        public IReadOnlyList<string>? Languages { get; init; }
-    }
+    /// <summary>
+    ///     null = auto (z configu)
+    ///     ["pol"] = wymuś
+    ///     ["*"] = wszystkie
+    /// </summary>
+    public IReadOnlyList<string>? Languages { get; init; }
 }
