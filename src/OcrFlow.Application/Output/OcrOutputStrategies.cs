@@ -14,10 +14,9 @@ namespace OcrFlow.Application.Output
             OcrOutput output,
             CancellationToken ct)
         {
-            foreach (var strategy in _strategies)
+            foreach (var strategy in _strategies.Where(x=> x.ShouldRun()))
             {
-                if (strategy.ShouldRun())
-                    await strategy.RunAsync(output, ct);
+                await strategy.RunAsync(output, ct);
             }
         }
     }

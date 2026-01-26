@@ -31,18 +31,17 @@ public sealed class OcrCommand : AsyncCommand<OcrCommandSettings>
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         OcrCommandSettings settings,
-        CancellationToken ct)
+        CancellationToken cancellationToken)
     {
         var options = _builder.Build(settings);
         _context.Initialize(options);
         OcrOptionsPrinter.Print(options);
 
-        await ProcessFilesAsync(options, ct);
+        await ProcessFilesAsync(options, cancellationToken);
 
-        foreach (var finalizer in _finalizers)
+        foreach (var finalizer in _finalizers.Where(x=>x.ShouldRun()))
         {
-            if (finalizer.ShouldRun())
-                await finalizer.FinalizeAsync(ct);
+            await finalizer.FinalizeAsync(cancellationToken);
         }
 
         return 0;
@@ -59,7 +58,7 @@ public sealed class OcrCommand : AsyncCommand<OcrCommandSettings>
             .ToList();
 
         using var reporter = new SpectreProgressReporter();
-        var uiTask = Task.Run(reporter.RunUi);
+        var uiTask = Task.Run(reporter.RunUi, ct);
 
         try
         {
@@ -76,8 +75,8 @@ public sealed class OcrCommand : AsyncCommand<OcrCommandSettings>
                         item.file,
                         item.pageNo,
                         options,
-                        token,
-                        reporter);
+                        reporter,
+                        token);
                 });
         }
         finally
@@ -91,8 +90,8 @@ public sealed class OcrCommand : AsyncCommand<OcrCommandSettings>
         string file,
         int pageNo,
         OcrRunOptions options,
-        CancellationToken ct,
-        SpectreProgressReporter reporter)
+        SpectreProgressReporter reporter,
+        CancellationToken ct)
     {
         var sw = Stopwatch.StartNew();
         reporter.PageStarted(pageNo, file);

@@ -8,9 +8,9 @@ namespace OcrFlow.Cli.Diagnostics
 {
     public static class GitHubIssueReporter
     {
-        private const string Owner = "asienicki"; // TODO: set GitHub owner
-        private const string Repo = "OcrFlow";   // TODO: set GitHub repo
-        private const string IssueTemplate = "crash.yml"; // optional
+        private const string Owner = "asienicki";
+        private const string Repo = "OcrFlow";
+        private const string IssueTemplate = "crash.yml";
 
         public static void ReportWithPrompt(string body, string hash)
         {

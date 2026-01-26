@@ -39,7 +39,7 @@ public sealed class OcrCommandSettings : CommandSettings
     /// Resolved input directory.
     /// Uses --source if provided, otherwise positional argument.
     /// </summary>
-    public string InputDir => InputDirOption ?? InputDirArg;
+    public string InputDir => InputDirOption ?? InputDirArg!;
 
     /// <summary>
     /// OCR languages (comma-separated, e.g. eng, pol).
@@ -97,19 +97,19 @@ public sealed class OcrCommandSettings : CommandSettings
     /// Output directory for all generated files.
     /// </summary>
     [CommandOption("--outputdir")]
-    public string OutputDir { get; internal set; }
+    public string OutputDir { get; internal set; } = null!;
 
     /// <summary>
     /// Prefix used when generating Markdown file names.
     /// </summary>
     [CommandOption("--pdf-name-prefix")]
-    public string MarkdownFileNamePrefix { get; internal set; }
+    public string MarkdownFileNamePrefix { get; internal set; } = null!;
 
     /// <summary>
     /// Prefix used when generating PDF file names.
     /// </summary>
     [CommandOption("--md-name-prefix")]
-    public string PdfFileNamePrefix { get; internal set; }
+    public string PdfFileNamePrefix { get; internal set; } = null!;
 
     /// <summary>
     /// Validates command-line arguments and option combinations.

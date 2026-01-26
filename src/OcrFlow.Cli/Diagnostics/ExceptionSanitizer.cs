@@ -2,7 +2,7 @@
 
 namespace OcrFlow.Cli.Diagnostics
 {
-    public static class ExceptionSanitizer
+    public static partial class ExceptionSanitizer
     {
         private const int MaxLength = 4000;
 
@@ -17,32 +17,24 @@ namespace OcrFlow.Cli.Diagnostics
             value = value.Replace(Environment.UserName, "<user>");
 
             // Windows paths: C:\Users\X\
-            value = Regex.Replace(
+            value = WindowsUserPathRegex().Replace(
                 value,
-                @"[A-Z]:\\Users\\[^\\]+\\",
-                @"C:\Users\<user>\",
-                RegexOptions.IgnoreCase);
+                @"C:\Users\<user>\");
 
             // Linux / macOS home
-            value = Regex.Replace(
+            value = UnixHomeRegex().Replace(
                 value,
-                @"/home/[^/]+/",
-                "/home/<user>/",
-                RegexOptions.IgnoreCase);
+                "/home/<user>/");
 
             // Bearer tokens
-            value = Regex.Replace(
+            value = BearerTokenRegex().Replace(
                 value,
-                @"Bearer\s+[A-Za-z0-9\-\._~\+\/]+=*",
-                "Bearer <redacted>",
-                RegexOptions.IgnoreCase);
+                "Bearer <redacted>");
 
-            // Connection strings (very rough)
-            value = Regex.Replace(
+            // Connection strings
+            value = PasswordRegex().Replace(
                 value,
-                @"(Password|Pwd)=([^;]+)",
-                "$1=<redacted>",
-                RegexOptions.IgnoreCase);
+                "$1=<redacted>");
 
             // Trim length (URL safety)
             if (value.Length > MaxLength)
@@ -50,5 +42,17 @@ namespace OcrFlow.Cli.Diagnostics
 
             return value.Trim();
         }
+
+        [GeneratedRegex(@"[A-Z]:\\Users\\[^\\]+\\", RegexOptions.IgnoreCase)]
+        private static partial Regex WindowsUserPathRegex();
+
+        [GeneratedRegex(@"/home/[^/]+/", RegexOptions.IgnoreCase)]
+        private static partial Regex UnixHomeRegex();
+
+        [GeneratedRegex(@"Bearer\s+[A-Za-z0-9\-\._~\+\/]+=*", RegexOptions.IgnoreCase)]
+        private static partial Regex BearerTokenRegex();
+
+        [GeneratedRegex(@"(Password|Pwd)=([^;]+)", RegexOptions.IgnoreCase)]
+        private static partial Regex PasswordRegex();
     }
 }

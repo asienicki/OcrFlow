@@ -8,8 +8,7 @@ public sealed class OcrRunOptionsBuilder
 {
     private readonly OcrFlowOptions _config;
 
-    public OcrRunOptionsBuilder(
-        IOptions<OcrFlowOptions> config)
+    public OcrRunOptionsBuilder(IOptions<OcrFlowOptions> config)
     {
         _config = config.Value;
     }
@@ -21,20 +20,13 @@ public sealed class OcrRunOptionsBuilder
             InputDir = cli.InputDir,
             Merge = !cli.NoMerge,
 
-            GeneratePdf = cli.OnlyMarkdown
-                ? false
-                : !cli.NoPdf,
-
-            GenerateMarkdown = cli.OnlyPdf
-                ? false
-                : !cli.NoMarkdown,
+            GeneratePdf = !cli.OnlyMarkdown && !cli.NoPdf,
+            GenerateMarkdown = !cli.OnlyPdf && !cli.NoMarkdown,
 
             Languages = !string.IsNullOrWhiteSpace(cli.Lang)
-                ? cli.Lang
-                .Split(',')
-                .Select(x => x.Trim())
-                .ToArray()
+                ? cli.Lang.Split(',').Select(x => x.Trim()).ToArray()
                 : _config.Tesseract.DefaultLanguages,
+
             OutputDirectory = cli.OutputDir ?? cli.InputDir,
             MarkdownFileNamePrefix = cli.MarkdownFileNamePrefix ?? "",
             PdfFileNamePrefix = cli.PdfFileNamePrefix ?? ""
