@@ -1,5 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 
+namespace OcrFlow.Infrastructure;
+
 public class SemiNumericComparer : IComparer<string>
 {
     private static readonly Regex Num = new(@"(\d+)", RegexOptions.Compiled);

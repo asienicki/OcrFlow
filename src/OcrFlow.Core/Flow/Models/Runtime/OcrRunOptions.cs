@@ -1,4 +1,6 @@
-﻿public sealed class OcrRunOptions
+﻿namespace OcrFlow.Core.Flow.Models.Runtime;
+
+public sealed class OcrRunOptions
 {
     public string InputDir { get; init; } = null!;
 
