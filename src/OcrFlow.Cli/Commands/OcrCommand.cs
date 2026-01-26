@@ -56,6 +56,7 @@ public sealed class OcrCommand : AsyncCommand<OcrCommandSettings>
             .ToList();
 
         using var reporter = new SpectreProgressReporter();
+
         var uiTask = Task.Run(reporter.RunUi, ct);
 
         try
@@ -79,7 +80,7 @@ public sealed class OcrCommand : AsyncCommand<OcrCommandSettings>
         }
         finally
         {
-            reporter.Dispose();
+            reporter.Complete();
             await uiTask;
         }
     }
