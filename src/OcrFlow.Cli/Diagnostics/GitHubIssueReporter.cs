@@ -64,12 +64,9 @@ namespace OcrFlow.Cli.Diagnostics
             }
             catch
             {
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                    _ = Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
-                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                    _ = Process.Start("open", url);
-                else
-                    _ = Process.Start("xdg-open", url);
+                _ = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+                    ? Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true })
+                    : RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? Process.Start("open", url) : Process.Start("xdg-open", url);
             }
         }
 

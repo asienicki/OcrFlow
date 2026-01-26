@@ -58,10 +58,7 @@ namespace OcrFlow.Markdown.Flow.Steps
 
         private static bool HasSimilarEnding(string a, string b)
         {
-            if (a.Length < 3 || b.Length < 3)
-                return false;
-
-            return a[^3..].Equals(b[^3..], StringComparison.OrdinalIgnoreCase);
+            return a.Length < 3 || b.Length < 3 ? false : a[^3..].Equals(b[^3..], StringComparison.OrdinalIgnoreCase);
         }
 
         private static IEnumerable<string> SplitLines(string text)

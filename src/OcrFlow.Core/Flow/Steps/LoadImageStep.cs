@@ -23,17 +23,12 @@ namespace OcrFlow.Core.Flow.Steps
             // DPI detection (fallback 300)
             var exif = state.Image.Metadata.ExifProfile;
 
-            if (exif is not null &&
+            state.Dpi = exif is not null &&
                 exif.TryGetValue(ExifTag.XResolution, out var xRes) &&
                 xRes?.Value is SixLabors.ImageSharp.Rational r &&
-                r.Denominator != 0)
-            {
-                state.Dpi = (int)Math.Round((double)r.Numerator / r.Denominator);
-            }
-            else
-            {
-                state.Dpi = 300;
-            }
+                r.Denominator != 0
+                ? (int)Math.Round((double)r.Numerator / r.Denominator)
+                : 300;
         }
     }
 }

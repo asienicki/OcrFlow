@@ -131,11 +131,10 @@ public sealed class OcrCommandSettings : CommandSettings
             );
 
         // Mutually exclusive PDF options
-        if (NoPdf && OnlyPdf)
-            return ValidationResult.Error(
+        return NoPdf && OnlyPdf
+            ? ValidationResult.Error(
                 "\nOptions:\n\t--nopdf \nand\n\t--onlypdf\ncannot be used together."
-            );
-
-        return ValidationResult.Success();
+            )
+            : ValidationResult.Success();
     }
 }

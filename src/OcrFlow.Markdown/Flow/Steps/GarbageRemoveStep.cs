@@ -26,16 +26,7 @@ namespace OcrFlow.Markdown.Flow.Steps
 
         private static bool IsGarbage(string line)
         {
-            if (line.Length < 4)
-                return true;
-
-            if (GarbageWords.IsMatch(line))
-                return true;
-
-            if (GarbageStart.IsMatch(line))
-                return true;
-
-            return false;
+            return line.Length < 4 ? true : GarbageWords.IsMatch(line) ? true : GarbageStart.IsMatch(line);
         }
 
         private static IEnumerable<string> SplitLines(string text)

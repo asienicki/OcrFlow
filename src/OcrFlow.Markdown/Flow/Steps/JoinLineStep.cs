@@ -33,10 +33,11 @@ namespace OcrFlow.Markdown.Flow.Steps
 
         private static bool ShouldJoin(string current, string next)
         {
-            if (EndsSentence(current)) return false;
-            if (!StartsUpper(next)) return false;
-
-            return JoinEndings.Any(e =>
+            return EndsSentence(current)
+                ? false
+                : !StartsUpper(next)
+                ? false
+                : JoinEndings.Any(e =>
                 current.EndsWith(e, StringComparison.OrdinalIgnoreCase));
         }
 

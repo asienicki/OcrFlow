@@ -31,16 +31,14 @@ namespace OcrFlow.Markdown.Flow.Steps
         private static bool IsHeader(string line)
         {
             if (!IsAllCaps(line)) return false;
-            if (line.Length > 60) return false;
-            if (line.Contains("|")) return false;
-
-            if (ForbiddenEndings.Any(e =>
-                line.EndsWith(e, StringComparison.OrdinalIgnoreCase)))
-                return false;
-
-            if (LooksLikeIdentifier(line)) return false;
-
-            return true;
+            return line.Length > 60
+                ? false
+                : line.Contains("|")
+                ? false
+                : ForbiddenEndings.Any(e =>
+                line.EndsWith(e, StringComparison.OrdinalIgnoreCase))
+                ? false
+                : !LooksLikeIdentifier(line);
         }
 
         private static bool IsAllCaps(string line) =>
