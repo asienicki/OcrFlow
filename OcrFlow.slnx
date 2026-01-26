@@ -13,4 +13,5 @@
   <Project Path="src/OcrFlow.Core/OcrFlow.Core.csproj" Id="5043691f-7f30-4506-8c7f-50d2274b1d73" />
   <Project Path="src/OcrFlow.Infrastructure/OcrFlow.Infrastructure.csproj" Id="0e736eb0-2f71-45b9-82e9-e19153b0397b" />
   <Project Path="src/OcrFlow.Resources/OcrFlow.Resources.csproj" Id="fc9e635f-bf81-4fb2-a266-8569b7bb5966" />
+  <Project Path="tests/OcrFlow.UnitTests/OcrFlow.UnitTests.csproj" Id="af0013c7-cb0d-435a-80a3-6311b07342f8" />
 </Solution>
