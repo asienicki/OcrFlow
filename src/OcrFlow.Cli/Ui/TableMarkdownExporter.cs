@@ -1,5 +1,7 @@
 ﻿using System.Text;
 
+namespace OcrFlow.Cli.Ui;
+
 public static class TableMarkdownExporter
 {
     public static void Save(string path, IEnumerable<PageStatus> pages)

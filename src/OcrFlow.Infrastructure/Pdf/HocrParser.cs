@@ -3,6 +3,8 @@ using PdfSharp.Pdf;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
+namespace OcrFlow.Infrastructure.Pdf;
+
 public static class HocrParser
 {
     private static readonly Regex LineRegex =

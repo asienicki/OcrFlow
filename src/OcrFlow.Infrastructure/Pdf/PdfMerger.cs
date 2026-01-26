@@ -1,6 +1,8 @@
 ﻿using PdfSharp.Pdf;
 using PdfSharp.Pdf.IO;
 
+namespace OcrFlow.Infrastructure.Pdf;
+
 public static class PdfMerger
 {
     public static void Merge(string inputPdfDir, string outputFile)

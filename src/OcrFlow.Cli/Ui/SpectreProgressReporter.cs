@@ -1,18 +1,7 @@
 ﻿using Spectre.Console;
 using System.Collections.Concurrent;
 
-public interface IProgressReporter
-{
-    void PageStarted(int pageNo, string file);
-    void PageCompleted(int pageNo, long ocrMs);
-}
-public sealed class PageStatus
-{
-    public int PageNo { get; init; }
-    public string File { get; init; } = "";
-    public string Status { get; set; } = "pending";
-    public long OcrMs { get; set; }
-}
+namespace OcrFlow.Cli.Ui;
 
 public sealed class SpectreProgressReporter : IProgressReporter, IDisposable
 {
@@ -89,6 +78,7 @@ public sealed class SpectreProgressReporter : IProgressReporter, IDisposable
     public void Dispose()
     {
         _cts.Cancel();
+        _cts.Dispose();
         _uiTask?.Wait();
     }
 }

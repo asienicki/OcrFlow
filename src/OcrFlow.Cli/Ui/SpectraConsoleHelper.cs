@@ -1,5 +1,7 @@
 ﻿using Spectre.Console;
 
+namespace OcrFlow.Cli.Ui;
+
 public static class SpectraConsoleHelper
 {
     public static void PrintHeader()

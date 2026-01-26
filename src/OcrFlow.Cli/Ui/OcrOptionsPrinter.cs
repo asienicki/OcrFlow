@@ -1,5 +1,7 @@
 ﻿using Spectre.Console;
 
+namespace OcrFlow.Cli.Ui;
+
 internal static class OcrOptionsPrinter
 {
     public static void Print(OcrRunOptions o)

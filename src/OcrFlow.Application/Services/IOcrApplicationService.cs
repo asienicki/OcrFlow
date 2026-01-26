@@ -5,7 +5,7 @@ namespace OcrFlow.Application.Services
     public interface IOcrApplicationService
     {
         Task<OcrOutput> ProcessAsync(
-            OcrInput options,
+            OcrInput input,
             CancellationToken ct);
     }
 }
