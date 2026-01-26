@@ -7,26 +7,31 @@ public sealed class SpectreProgressReporter : IProgressReporter, IDisposable
 {
     private readonly CancellationTokenSource _cts = new();
     private readonly ConcurrentDictionary<int, PageStatus> _pages = new();
-    private Task? _uiTask;
 
     private int _disposed; // 0 = alive, 1 = disposed
 
-    public void Dispose()
+    public void RunUi()
     {
-        if (Interlocked.Exchange(ref _disposed, 1) == 1)
-            return;
+        AnsiConsole.Live(BuildTable())
+            .AutoClear(false)
+            .Start(ctx =>
+            {
+                while (!_cts.IsCancellationRequested)
+                {
+                    ctx.UpdateTarget(BuildTable());
+                    Thread.Sleep(100);
+                }
 
+                // FINAL RENDER – krytyczne
+                ctx.UpdateTarget(BuildTable());
+                ctx.Refresh();
+            });
+    }
+
+    public void Complete()
+    {
         if (!_cts.IsCancellationRequested)
             _cts.Cancel();
-
-        try
-        {
-            _uiTask?.Wait();
-        }
-        finally
-        {
-            _cts.Dispose();
-        }
     }
 
     public void PageStarted(int pageNo, string file)
@@ -48,31 +53,6 @@ public sealed class SpectreProgressReporter : IProgressReporter, IDisposable
         }
     }
 
-    public IReadOnlyCollection<PageStatus> Snapshot()
-    {
-        return _pages.Values.ToList();
-    }
-
-    public void RunUi()
-    {
-        AnsiConsole.Live(BuildTable())
-            .AutoClear(false)
-            .Start(ctx =>
-            {
-                _uiTask = Task.Run(async () =>
-                {
-                    while (!_cts.IsCancellationRequested)
-                    {
-                        ctx.UpdateTarget(BuildTable());
-                        await Task.Delay(100);
-                    }
-                });
-
-                // blokada aż Dispose()
-                _ = _cts.Token.WaitHandle.WaitOne();
-            });
-    }
-
     public void PageFailed(int pageNo, string error)
     {
         if (_pages.TryGetValue(pageNo, out var p))
@@ -89,12 +69,23 @@ public sealed class SpectreProgressReporter : IProgressReporter, IDisposable
             .AddColumn("OCR [[ms]]");
 
         foreach (var p in _pages.Values.OrderBy(x => x.PageNo))
-            _ = table.AddRow(
+        {
+            table.AddRow(
                 p.PageNo.ToString(),
                 p.File,
                 p.Status,
-                p.OcrMs == 0 ? "-" : p.OcrMs.ToString());
+                p.OcrMs == 0 ? "-" : p.OcrMs.ToString()
+            );
+        }
 
         return table;
+    }
+
+    public void Dispose()
+    {
+        if (Interlocked.Exchange(ref _disposed, 1) == 1)
+            return;
+
+        _cts.Dispose();
     }
 }
