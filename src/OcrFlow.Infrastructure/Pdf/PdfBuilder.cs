@@ -1,6 +1,8 @@
 ﻿using PdfSharp.Drawing;
 using PdfSharp.Pdf;
 
+namespace OcrFlow.Infrastructure.Pdf;
+
 public static class PdfBuilder
 {
     public static void Build(string imagePath, string hocr, string outputPdf)

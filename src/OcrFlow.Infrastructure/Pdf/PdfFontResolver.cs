@@ -1,4 +1,7 @@
 ﻿using PdfSharp.Fonts;
+
+namespace OcrFlow.Infrastructure.Pdf;
+
 public class PdfFontResolver : IFontResolver
 {
     public byte[] GetFont(string faceName)
@@ -13,8 +16,8 @@ public class PdfFontResolver : IFontResolver
 
     public FontResolverInfo ResolveTypeface(
         string familyName,
-        bool isBold,
-        bool isItalic)
+        bool bold,
+        bool italic)
     {
         return new FontResolverInfo("DejaVuSans");
     }

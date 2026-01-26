@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console.Cli;
 
+namespace OcrFlow.Cli.Di;
+
 public sealed class TypeRegistrar : ITypeRegistrar
 {
     private readonly IServiceCollection _services;

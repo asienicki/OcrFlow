@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console.Cli;
 
+namespace OcrFlow.Cli.Di;
+
 public sealed class TypeResolver : ITypeResolver, IDisposable
 {
     private readonly ServiceProvider _provider;

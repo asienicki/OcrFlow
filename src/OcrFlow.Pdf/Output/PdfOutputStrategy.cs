@@ -1,6 +1,7 @@
 ﻿using OcrFlow.Core;
 using OcrFlow.Core.Flow.Models;
 using OcrFlow.Core.Output.Abstractions;
+using OcrFlow.Infrastructure.Pdf;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;
 
