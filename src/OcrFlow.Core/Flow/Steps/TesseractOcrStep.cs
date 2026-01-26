@@ -26,8 +26,12 @@ public sealed class TesseractOcrStep : IOcrStep
         // wybór tessdata (na razie pierwszy – później można rozszerzyć)
         var source = _options.DataSources.First();
 
+        var tessdataPath = Path.IsPathRooted(source.Path)
+            ? source.Path
+            : Path.Combine(AppContext.BaseDirectory, source.Path);
+
         using var engine = new TesseractEngine(
-            source.Path,
+            tessdataPath,
             string.Join("+", source.Languages),
             EngineMode.LstmOnly);
 

@@ -9,11 +9,24 @@ public sealed class SpectreProgressReporter : IProgressReporter, IDisposable
     private readonly ConcurrentDictionary<int, PageStatus> _pages = new();
     private Task? _uiTask;
 
+    private int _disposed; // 0 = alive, 1 = disposed
+
     public void Dispose()
     {
-        _cts.Cancel();
-        _cts.Dispose();
-        _uiTask?.Wait();
+        if (Interlocked.Exchange(ref _disposed, 1) == 1)
+            return;
+
+        if (!_cts.IsCancellationRequested)
+            _cts.Cancel();
+
+        try
+        {
+            _uiTask?.Wait();
+        }
+        finally
+        {
+            _cts.Dispose();
+        }
     }
 
     public void PageStarted(int pageNo, string file)

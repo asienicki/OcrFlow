@@ -81,7 +81,7 @@ internal static class Program
 
             app.Configure(cfg =>
             {
-                _ = cfg.SetApplicationName("ocrpdf");
+                _ = cfg.SetApplicationName("OcrFlow");
                 _ = cfg.ValidateExamples();
             });
 
