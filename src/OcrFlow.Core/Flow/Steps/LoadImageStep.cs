@@ -2,7 +2,6 @@
 using OcrFlow.Core.Flow.Models;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Metadata.Profiles.Exif;
-using Tesseract;
 
 namespace OcrFlow.Core.Flow.Steps
 {

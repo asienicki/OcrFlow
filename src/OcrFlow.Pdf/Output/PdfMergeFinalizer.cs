@@ -32,7 +32,7 @@ namespace OcrFlow.Pdf.Output
             {
                 using var src = PdfReader.Open(file, PdfDocumentOpenMode.Import);
                 for (int i = 0; i < src.PageCount; i++)
-                    target.AddPage(src.Pages[i]);
+                    _ = target.AddPage(src.Pages[i]);
             }
 
             target.Save(Path.Combine(_context.Options.OutputDirectory, "all.pdf"));

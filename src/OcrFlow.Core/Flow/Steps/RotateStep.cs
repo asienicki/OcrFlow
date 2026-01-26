@@ -34,13 +34,13 @@ namespace OcrFlow.Core.Flow.Steps
                 switch (orientation)
                 {
                     case 3:
-                        ctx.Rotate(180);
+                        _ = ctx.Rotate(180);
                         break;
                     case 6:
-                        ctx.Rotate(90);
+                        _ = ctx.Rotate(90);
                         break;
                     case 8:
-                        ctx.Rotate(270);
+                        _ = ctx.Rotate(270);
                         break;
                 }
             });

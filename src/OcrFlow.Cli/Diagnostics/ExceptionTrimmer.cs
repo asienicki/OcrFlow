@@ -16,11 +16,11 @@ namespace OcrFlow.Cli.Diagnostics
             var tail = input[^(maxLength / 2)..];
 
             var sb = new StringBuilder();
-            sb.AppendLine(head.TrimEnd());
-            sb.AppendLine();
-            sb.AppendLine("<trimmed>");
-            sb.AppendLine();
-            sb.AppendLine(tail.TrimStart());
+            _ = sb.AppendLine(head.TrimEnd());
+            _ = sb.AppendLine();
+            _ = sb.AppendLine("<trimmed>");
+            _ = sb.AppendLine();
+            _ = sb.AppendLine(tail.TrimStart());
 
             return sb.ToString();
         }

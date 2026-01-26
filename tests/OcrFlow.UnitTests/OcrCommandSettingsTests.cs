@@ -1,6 +1,6 @@
 ﻿using OcrFlow.Cli.Commands;
 
-namespace OcrFlow.Cli.Tests.Commands;
+namespace OcrFlow.UnitTests;
 
 public sealed class OcrCommandSettingsTests
 {

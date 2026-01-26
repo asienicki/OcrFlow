@@ -21,7 +21,7 @@ namespace OcrFlow.Markdown.Flow.Steps
                     while (i + 1 < lines.Count && IsAllCaps(lines[i + 1]))
                     {
                         i++;
-                        sb.Append(' ').Append(lines[i]);
+                        _ = sb.Append(' ').Append(lines[i]);
                     }
 
                     output.Add($"## {sb.ToString().Replace("|", "").Trim()}");

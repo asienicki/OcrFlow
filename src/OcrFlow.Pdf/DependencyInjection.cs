@@ -9,7 +9,7 @@ namespace OcrFlow.Pdf
         public static IServiceCollection AddOcrPdf(
             this IServiceCollection services)
         {
-            services.AddTransient<IOcrOutputStrategy, PdfOutputStrategy>();
+            _ = services.AddTransient<IOcrOutputStrategy, PdfOutputStrategy>();
 
             return services;
         }

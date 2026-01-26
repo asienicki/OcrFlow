@@ -1,5 +1,5 @@
-﻿using System.Text.RegularExpressions;
-using OcrFlow.Markdown.Flow.Abstractions;
+﻿using OcrFlow.Markdown.Flow.Abstractions;
+using System.Text.RegularExpressions;
 
 namespace OcrFlow.Markdown.Flow.Steps
 {

@@ -9,7 +9,7 @@ namespace OcrFlow.Markdown
         public static IServiceCollection AddOcrMarkdown(
             this IServiceCollection services)
         {
-            services.AddTransient<IOcrOutputStrategy, MarkdownOutputStrategy>();
+            _ = services.AddTransient<IOcrOutputStrategy, MarkdownOutputStrategy>();
 
             return services;
         }

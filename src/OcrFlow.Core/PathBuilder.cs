@@ -13,7 +13,7 @@
         {
             var folder = Path.Combine(options.OutputDirectory, "pdf");
 
-            Directory.CreateDirectory(folder);
+            _ = Directory.CreateDirectory(folder);
 
             return folder;
         }
@@ -21,7 +21,7 @@
         {
             var folder = Path.Combine(options.OutputDirectory, "md");
 
-            Directory.CreateDirectory(folder);
+            _ = Directory.CreateDirectory(folder);
 
             return folder;
         }

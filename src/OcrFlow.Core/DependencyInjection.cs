@@ -11,14 +11,14 @@ namespace OcrFlow.Core
         public static IServiceCollection AddOcrCore(
         this IServiceCollection services)
         {
-            services.AddSingleton<IOcrStepFactory, OcrStepFactory>();
+            _ = services.AddSingleton<IOcrStepFactory, OcrStepFactory>();
 
-            services.AddTransient<LoadImageStep>();
-            services.AddTransient<RotateStep>();
-            services.AddTransient<NormalizeDpiStep>();
-            services.AddTransient<DeskewStep>();
-            services.AddTransient<TesseractOcrStep>();
-            services.AddTransient<OcrProcess>();
+            _ = services.AddTransient<LoadImageStep>();
+            _ = services.AddTransient<RotateStep>();
+            _ = services.AddTransient<NormalizeDpiStep>();
+            _ = services.AddTransient<DeskewStep>();
+            _ = services.AddTransient<TesseractOcrStep>();
+            _ = services.AddTransient<OcrProcess>();
 
             return services;
         }

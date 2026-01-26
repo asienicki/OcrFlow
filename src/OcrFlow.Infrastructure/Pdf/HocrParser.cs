@@ -29,7 +29,7 @@ public static class HocrParser
         {
             double x1 = double.Parse(line.Groups[1].Value, CultureInfo.InvariantCulture) * scaleX;
             double y1 = double.Parse(line.Groups[2].Value, CultureInfo.InvariantCulture) * scaleY;
-            double x2 = double.Parse(line.Groups[3].Value, CultureInfo.InvariantCulture) * scaleX;
+            _ = double.Parse(line.Groups[3].Value, CultureInfo.InvariantCulture) * scaleX;
             double y2 = double.Parse(line.Groups[4].Value, CultureInfo.InvariantCulture) * scaleY;
 
             double height = y2 - y1;

@@ -27,7 +27,7 @@ public sealed class SpectreProgressReporter : IProgressReporter, IDisposable
                 });
 
                 // blokada aż Dispose()
-                _cts.Token.WaitHandle.WaitOne();
+                _ = _cts.Token.WaitHandle.WaitOne();
             });
     }
 
@@ -66,7 +66,7 @@ public sealed class SpectreProgressReporter : IProgressReporter, IDisposable
             .AddColumn("OCR [[ms]]");
 
         foreach (var p in _pages.Values.OrderBy(x => x.PageNo))
-            table.AddRow(
+            _ = table.AddRow(
                 p.PageNo.ToString(),
                 p.File,
                 p.Status,

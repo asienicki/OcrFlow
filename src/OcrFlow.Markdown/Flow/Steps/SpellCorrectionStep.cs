@@ -16,7 +16,7 @@ namespace OcrFlow.Markdown.Flow.Steps
         public SpellCorrectionStep(string dictionaryPath)
         {
             _sym = new SymSpell(maxDictionaryEditDistance: 2, prefixLength: 7);
-            _sym.LoadDictionary(dictionaryPath, termIndex: 0, countIndex: 1);
+            _ = _sym.LoadDictionary(dictionaryPath, termIndex: 0, countIndex: 1);
 
             _dictionary = File.ReadLines(dictionaryPath)
                 .Select(l => l.Split(' ')[0])

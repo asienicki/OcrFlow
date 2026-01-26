@@ -39,7 +39,7 @@ public sealed class OcrCommand : AsyncCommand<OcrCommandSettings>
 
         await ProcessFilesAsync(options, cancellationToken);
 
-        foreach (var finalizer in _finalizers.Where(x=>x.ShouldRun()))
+        foreach (var finalizer in _finalizers.Where(x => x.ShouldRun()))
         {
             await finalizer.FinalizeAsync(cancellationToken);
         }
@@ -104,7 +104,7 @@ public sealed class OcrCommand : AsyncCommand<OcrCommandSettings>
                 Languages = options.Languages
             };
 
-            await _ocr.ProcessAsync(input, ct);
+            _ = await _ocr.ProcessAsync(input, ct);
 
             reporter.PageCompleted(pageNo, sw.ElapsedMilliseconds);
         }

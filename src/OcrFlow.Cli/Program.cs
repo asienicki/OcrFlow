@@ -41,10 +41,10 @@ internal static class Program
 
             IServiceCollection services = new ServiceCollection();
 
-            Host.CreateDefaultBuilder(args)
+            _ = Host.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration(config =>
                 {
-                    config
+                    _ = config
                         .AddJsonFile(Path.Combine(AppContext.BaseDirectory, "appsettings.json"), optional: false)
                         .AddJsonFile(
                             Path.Combine(
@@ -55,21 +55,21 @@ internal static class Program
                 })
                 .ConfigureServices((ctx, _) =>
                 {
-                    services.Configure<OcrFlowOptions>(
+                    _ = services.Configure<OcrFlowOptions>(
                         ctx.Configuration.GetSection("OcrFlow"));
 
-                    services
+                    _ = services
                         .AddOcrCore()
                         .AddOcrMarkdown()
                         .AddOcrApplication()
                         .AddOcrPdf();
 
-                    services.AddTransient<OcrCommand>();
-                    services.AddSingleton<OcrRunContext>();
-                    services.AddSingleton<OcrRunOptionsBuilder>();
+                    _ = services.AddTransient<OcrCommand>();
+                    _ = services.AddSingleton<OcrRunContext>();
+                    _ = services.AddSingleton<OcrRunOptionsBuilder>();
 
-                    services.AddSingleton<IOutputFinalizer, PdfMergeFinalizer>();
-                    services.AddSingleton<IOutputFinalizer, MarkdownMergeFinalizer>();
+                    _ = services.AddSingleton<IOutputFinalizer, PdfMergeFinalizer>();
+                    _ = services.AddSingleton<IOutputFinalizer, MarkdownMergeFinalizer>();
                 })
                 .Build();
 
@@ -78,8 +78,8 @@ internal static class Program
 
             app.Configure(cfg =>
             {
-                cfg.SetApplicationName("ocrpdf");
-                cfg.ValidateExamples();
+                _ = cfg.SetApplicationName("ocrpdf");
+                _ = cfg.ValidateExamples();
             });
 
             return await app.RunAsync(args);

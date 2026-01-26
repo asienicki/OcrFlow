@@ -12,7 +12,7 @@ namespace OcrFlow.Core
                     ? "nul"
                     : "/dev/null";
 
-            engine.SetVariable("debug_file", nullDevice);
+            _ = engine.SetVariable("debug_file", nullDevice);
         }
     }
 }

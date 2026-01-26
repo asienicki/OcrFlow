@@ -40,14 +40,14 @@ namespace OcrFlow.Cli.Diagnostics
             var baseUrl = $"https://github.com/{Owner}/{Repo}/issues/new";
 
             var sb = new StringBuilder(baseUrl);
-            sb.Append($"?title={title}");
-            sb.Append($"&stacktrace={Uri.EscapeDataString(stacktrace)}");
-            sb.Append($"&what-happened=The application crashed.");
-            sb.Append($"&os={RuntimeInformation.OSDescription}");
-            sb.Append("&labels=bug,crash");
+            _ = sb.Append($"?title={title}");
+            _ = sb.Append($"&stacktrace={Uri.EscapeDataString(stacktrace)}");
+            _ = sb.Append($"&what-happened=The application crashed.");
+            _ = sb.Append($"&os={RuntimeInformation.OSDescription}");
+            _ = sb.Append("&labels=bug,crash");
 
             if (!string.IsNullOrWhiteSpace(IssueTemplate))
-                sb.Append($"&template={IssueTemplate}");
+                _ = sb.Append($"&template={IssueTemplate}");
 
             return sb.ToString();
         }
@@ -56,7 +56,7 @@ namespace OcrFlow.Cli.Diagnostics
         {
             try
             {
-                Process.Start(new ProcessStartInfo
+                _ = Process.Start(new ProcessStartInfo
                 {
                     FileName = url,
                     UseShellExecute = true
@@ -65,11 +65,11 @@ namespace OcrFlow.Cli.Diagnostics
             catch
             {
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                    Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
+                    _ = Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
                 else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                    Process.Start("open", url);
+                    _ = Process.Start("open", url);
                 else
-                    Process.Start("xdg-open", url);
+                    _ = Process.Start("xdg-open", url);
             }
         }
 
