@@ -2,6 +2,8 @@
 
 **OcrFlow** is a lightweight, offline-first OCR pipeline for converting scanned images into searchable PDFs and structured Markdown.
 
+---
+
 ## Usage (Windows)
 
 ### First run (required)
@@ -14,80 +16,236 @@ Get-ChildItem . -Recurse | Unblock-File
 
 ---
 
-### Basic usage
+## Basic usage
 
 ```powershell
-.\OcrFlow.exe "<INPUT_PATH>"
+.\OcrFlow.exe "<INPUT_DIR>"
 ```
 
-* `<INPUT_PATH>` – folder containing PNG / JPG / PDF files
-* default behavior: **merge enabled**
-* output: `output.pdf` created in the input directory
+* `<INPUT_DIR>` – directory containing images (PNG / JPG / PDF)
+* default behavior:
+
+  * PDF generation enabled
+  * merge enabled
+  * Markdown enabled
+  * result summary enabled
+* output files are created in the input directory (unless `--outputdir` is used)
+
+You can also pass input directory explicitly:
+
+```powershell
+.\OcrFlow.exe --source "<INPUT_DIR>"
+```
 
 ---
 
-### Options
+## Options
 
-#### Merge (default)
+### Input directory
 
 ```powershell
-.\OcrFlow.exe "<INPUT_PATH>" --merge
+.\OcrFlow.exe "<INPUT_DIR>"
+.\OcrFlow.exe --source "<INPUT_DIR>"
 ```
 
-Scales all detected pages into a single PDF file.
+* positional argument or `--source <DIR>`
+* directory must exist
+
+---
+
+### OCR language
+
+```powershell
+.\OcrFlow.exe "<INPUT_DIR>" --lang eng
+```
+
+* `--lang <LANG>` – OCR language(s), e.g. `eng`, `pol`, `eng+pol`
+* default: `eng`
+
+---
+
+### PDF output
+
+#### Default
+
+PDFs are generated and merged into a single file.
+
+#### Disable PDF generation
+
+```powershell
+.\OcrFlow.exe "<INPUT_DIR>" --nopdf
+```
+
+#### PDF only
+
+```powershell
+.\OcrFlow.exe "<INPUT_DIR>" --onlypdf
+```
+
+* Generates **only PDF**
+* Skips Markdown generation
+
+> `--nopdf` and `--onlypdf` cannot be used together
+
+---
+
+### Markdown output
+
+#### Default
+
+Markdown summary is generated automatically.
+
+#### Disable Markdown
+
+```powershell
+.\OcrFlow.exe "<INPUT_DIR>" --nomarkdown
+```
+
+#### Markdown only
+
+```powershell
+.\OcrFlow.exe "<INPUT_DIR>" --onlymarkdown
+```
+
+* Generates **only Markdown**
+* Skips all PDF generation
+* Slightly faster for large batches
+
+> `--nomarkdown` and `--onlymarkdown` cannot be used together
+
+---
+
+### Merge control
+
+#### Default (merge enabled)
+
+```powershell
+.\OcrFlow.exe "<INPUT_DIR>"
+```
+
+All pages are merged into a single PDF.
 
 #### Disable merge
 
 ```powershell
-.\OcrFlow.exe "<INPUT_PATH>" --no-merge
+.\OcrFlow.exe "<INPUT_DIR>" --nomerge
 ```
 
-Generates separate PDF files instead of a single merged output.
+* Generates separate PDFs (one per page)
 
 ---
 
-### Example
+### Output directory
 
 ```powershell
-.\OcrFlow.exe "C:\Users\{user}\Scans\png"
+.\OcrFlow.exe "<INPUT_DIR>" --outputdir "C:\Output"
 ```
 
+* Overrides default output location
+* Input directory remains unchanged
+
+---
+
+### Output file name prefixes
+
+```powershell
+.\OcrFlow.exe "<INPUT_DIR>" --pdf-name-prefix scan_ --md-name-prefix text_
+```
+
+* `--pdf-name-prefix` – prefix for generated PDF files
+* `--md-name-prefix` – prefix for generated Markdown files
+
+---
+
+### Result summary file
+
+By default, OcrFlow generates a result summary file:
+
+```
+result-YYYY-MM-DD_HH-mm.md
+```
+
+Disable it with:
+
+```powershell
+.\OcrFlow.exe "<INPUT_DIR>" --noresult
+```
+
+---
+
+### Debug / testing (DEBUG builds only)
+
+```powershell
+.\OcrFlow.exe "<INPUT_DIR>" --throw
+```
+
+Forces an exception to test crash handling and diagnostics.
+
+---
+
+## Example
+
+```powershell
+.\OcrFlow.exe "C:\Users\{user}\Scans" --lang pol --onlymarkdown --outputdir "C:\Output"
+```
+
+---
+
+## Processing pipeline
 
 ```mermaid
 flowchart TD
-    A["Input images<br/>PNG / JPG"] --> B["Per-page pipeline"]
+    A["Input images<br/>PNG / JPG / PDF"] --> B["Per-page pipeline"]
 
     subgraph PerPage["Per-page pipeline"]
         B --> C["OCR<br/>Tesseract"]
         C --> D["Build searchable PDF<br/>image + text layer"]
-        C --> E["Collect raw text"]
+        C --> E["Extract raw text"]
     end
 
-    D --> F["pdf/ directory (temporary)"]
-    E --> G["PageTexts collection"]
+    D --> F["Temporary PDF files"]
+    E --> G["Collected page texts"]
 
     subgraph Global["Global pipeline"]
-        F --> H{"MergePdf enabled?"}
+        F --> H{"Merge enabled?"}
 
-        H -->|Yes| I["Merge PDFs into all.pdf"]
-        I --> J["all.pdf<br/>(output directory)"]
-        J --> K["Delete pdf/ directory"]
+        H -->|Yes| I["Merge PDFs"]
+        I --> J["Final PDF output"]
 
-        H -->|No| L["Keep per-page PDFs<br/>in pdf/ directory"]
+        H -->|No| L["Keep per-page PDFs"]
 
-        G --> M{"ExportMarkdown enabled?"}
-        M -->|Yes| N["TextProcessingPipeline"]
-        N --> O["MarkdownFormatter"]
-        O --> P["all.md<br/>(output directory)"]
+        G --> M{"Markdown enabled?"}
+        M -->|Yes| N["Text processing pipeline"]
+        N --> O["Markdown formatter"]
+        O --> P["Markdown output"]
 
-        M -->|No| Q["Skip Markdown export"]
+        M -->|No| Q["Skip Markdown"]
     end
 ```
 
-The project is built around a **two-level pipeline architecture**:
+---
 
-* **Per-page pipeline** – OCR → PDF → text collection
-* **Global pipeline** – merge, post-processing, export
+## Architecture
+
+OcrFlow uses a **two-level pipeline architecture**:
+
+### Per-page pipeline
+
+Executed once per page:
+
+* Image loading & normalization
+* OCR (Tesseract)
+* Searchable PDF generation
+* Raw text extraction
+
+### Global pipeline
+
+Executed once per run:
+
+* Optional PDF merge
+* Text post-processing
+* Optional Markdown export
+* Optional result summary
 
 Each step is explicit, composable, and independently testable.
 
@@ -95,73 +253,28 @@ Each step is explicit, composable, and independently testable.
 
 ## Key features
 
-* 🧠 **Offline OCR** powered by Tesseract (no cloud, no telemetry)
-* 📄 **Searchable PDF output** (image + invisible text layer)
-* 📝 **Markdown export** with OCR-aware normalization
-* 🔗 **Pipeline-based design** (Chain of Responsibility)
-* ⚙️ **Config-driven execution** (enable/disable steps like merge or spell correction)
-* 🧪 Deterministic output – no AI guessing, no hidden heuristics
-
----
-
-## Architecture overview
-
-OcrFlow intentionally avoids monolithic processing. Instead, it uses two independent but connected pipelines:
-
-### 1. Per-page pipeline
-
-Executed once per input image:
-
-* OCR (Tesseract)
-* PDF generation (image + text layer)
-* Text collection for later processing
-
-Each step processes **exactly one page** and has **no internal loops**.
-
-### 2. Global pipeline
-
-Executed once after all pages are processed:
-
-* PDF merge (optional)
-* Text post-processing
-* Markdown generation (`all.md`, `all.corrected.md`)
-* Cleanup
-
-This separation keeps responsibilities clear and avoids hidden coupling.
+* Offline OCR (no cloud, no telemetry)
+* Searchable PDF output
+* Structured Markdown summaries
+* Deterministic pipeline execution
+* Fine-grained CLI control
+* Clear separation of concerns
 
 ---
 
 ## Design goals
 
-* **Offline-first** – no external services
-* **Predictable output** – rule-based post-processing
-* **Explicit control flow** – no magic, no background behavior
-* **Low complexity** – no heavy frameworks or runtime DI
-* **Easy extensibility** – add/remove pipeline steps without refactoring core logic
+* Offline-first
+* Predictable output
+* Explicit control flow
+* Low runtime complexity
+* Easy extensibility
 
 ---
 
 ## Typical use cases
 
 * Archival scanning
-* Technical and construction documentation
-* Engineering project records
-* Offline document processing pipelines
-
----
-
-## Philosophy
-
-OcrFlow focuses on *engineering correctness* rather than convenience shortcuts:
-
-* OCR errors are handled with deterministic rules, not AI guessing
-* Text normalization is explicit and testable
-* Each pipeline step does exactly one thing
-
-If you need full control over OCR, layout, and post-processing — **OcrFlow is designed for you**.
-
----
-
-## License
-
-MIT (or your preferred license)
+* Technical documentation
+* Engineering records
+* Offline document processing

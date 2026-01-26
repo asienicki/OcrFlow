@@ -31,7 +31,7 @@ jobs:
       - name: Publish CLI
         shell: pwsh
         run: |
-          dotnet publish src/OcrFlow.App/OcrFlow.App.csproj `
+          dotnet publish src/OcrFlow.Cli/OcrFlow.Cli.csproj `
             -c Release `
             -r win-x64 `
             --self-contained false `

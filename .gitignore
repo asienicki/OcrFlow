@@ -419,3 +419,5 @@ FodyWeavers.xsd
 
 # Visual Studio / .NET user-specific files
 **/Properties/launchSettings.json
+*.tree
+*.diff

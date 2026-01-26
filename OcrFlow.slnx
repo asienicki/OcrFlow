@@ -1,9 +1,15 @@
 <Solution>
+  <Folder Name="/Output Strategies/">
+    <Project Path="src/OcrFlow.Markdown/OcrFlow.Markdown.csproj" />
+    <Project Path="src/OcrFlow.Pdf/OcrFlow.Pdf.csproj" />
+  </Folder>
   <Folder Name="/Solution Items/">
     <File Path="LICENSE" />
     <File Path="README.md" />
+    <File Path="THIRD-PARTY-NOTICES.md" />
   </Folder>
-  <Project Path="src/OcrFlow.App/OcrFlow.App.csproj" />
+  <Project Path="src/OcrFlow.Application/OcrFlow.Application.csproj" />
+  <Project Path="src/OcrFlow.Cli/OcrFlow.Cli.csproj" />
   <Project Path="src/OcrFlow.Core/OcrFlow.Core.csproj" Id="5043691f-7f30-4506-8c7f-50d2274b1d73" />
   <Project Path="src/OcrFlow.Infrastructure/OcrFlow.Infrastructure.csproj" Id="0e736eb0-2f71-45b9-82e9-e19153b0397b" />
   <Project Path="src/OcrFlow.Resources/OcrFlow.Resources.csproj" Id="fc9e635f-bf81-4fb2-a266-8569b7bb5966" />
