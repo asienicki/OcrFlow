@@ -17,6 +17,7 @@ using OcrFlow.Pdf;
 using OcrFlow.Pdf.Output;
 using PdfSharp.Fonts;
 using Spectre.Console.Cli;
+using System.Reflection;
 
 AppDomain.CurrentDomain.UnhandledException += (_, e) =>
 {
@@ -44,11 +45,9 @@ try
         .ConfigureAppConfiguration(config =>
         {
             config
-                .AddJsonFile("appsettings.json", optional: false)
-                .AddJsonFile(
-                    $"appsettings.{Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")}.json",
-                    optional: true)
-                .AddEnvironmentVariables();
+            .AddJsonFile(Path.Combine(AppContext.BaseDirectory, "appsettings.json"), optional: false)
+            .AddJsonFile(Path.Combine(AppContext.BaseDirectory, $"appsettings.{Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")}.json"), optional: true)
+            .AddEnvironmentVariables();
         })
         .ConfigureServices((ctx, _) =>
         {
