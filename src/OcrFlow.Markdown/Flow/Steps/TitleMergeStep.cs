@@ -1,49 +1,52 @@
-﻿using OcrFlow.Markdown.Flow.Abstractions;
-using System.Text;
+﻿using System.Text;
+using OcrFlow.Markdown.Flow.Abstractions;
 
-namespace OcrFlow.Markdown.Flow.Steps
+namespace OcrFlow.Markdown.Flow.Steps;
+
+public sealed class TitleMergeStep : ITextStep
 {
-    public sealed class TitleMergeStep : ITextStep
+    public void Execute(TextState state)
     {
-        public void Execute(TextState state)
+        var lines = SplitLines(state.Text).ToList();
+        var output = new List<string>();
+
+        for (var i = 0; i < lines.Count; i++)
         {
-            var lines = SplitLines(state.Text).ToList();
-            var output = new List<string>();
+            var current = lines[i];
 
-            for (int i = 0; i < lines.Count; i++)
+            if (IsAllCaps(current) && i + 1 < lines.Count && IsAllCaps(lines[i + 1]))
             {
-                var current = lines[i];
+                var sb = new StringBuilder(current);
 
-                if (IsAllCaps(current) && i + 1 < lines.Count && IsAllCaps(lines[i + 1]))
+                while (i + 1 < lines.Count && IsAllCaps(lines[i + 1]))
                 {
-                    var sb = new StringBuilder(current);
-
-                    while (i + 1 < lines.Count && IsAllCaps(lines[i + 1]))
-                    {
-                        i++;
-                        _ = sb.Append(' ').Append(lines[i]);
-                    }
-
-                    output.Add($"## {sb.ToString().Replace("|", "").Trim()}");
-                    output.Add(string.Empty);
+                    i++;
+                    _ = sb.Append(' ').Append(lines[i]);
                 }
-                else
-                {
-                    output.Add(current);
-                }
+
+                output.Add($"## {sb.ToString().Replace("|", "").Trim()}");
+                output.Add(string.Empty);
             }
-
-            state.Text = string.Join(Environment.NewLine, output);
+            else
+            {
+                output.Add(current);
+            }
         }
 
-        private static bool IsAllCaps(string line) =>
-            line.Any(char.IsLetter) && line == line.ToUpperInvariant();
+        state.Text = string.Join(Environment.NewLine, output);
+    }
 
-        private static IEnumerable<string> SplitLines(string text)
-            => text.Replace("\r\n", "\n")
-                   .Replace("\r", "\n")
-                   .Split('\n')
-                   .Select(l => l.Trim())
-                   .Where(l => l.Length > 0);
+    private static bool IsAllCaps(string line)
+    {
+        return line.Any(char.IsLetter) && line == line.ToUpperInvariant();
+    }
+
+    private static IEnumerable<string> SplitLines(string text)
+    {
+        return text.Replace("\r\n", "\n")
+            .Replace("\r", "\n")
+            .Split('\n')
+            .Select(l => l.Trim())
+            .Where(l => l.Length > 0);
     }
 }

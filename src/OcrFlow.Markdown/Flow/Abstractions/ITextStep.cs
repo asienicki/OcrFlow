@@ -1,7 +1,6 @@
-﻿namespace OcrFlow.Markdown.Flow.Abstractions
+﻿namespace OcrFlow.Markdown.Flow.Abstractions;
+
+public interface ITextStep
 {
-    public interface ITextStep
-    {
-        void Execute(TextState state);
-    }
+    void Execute(TextState state);
 }

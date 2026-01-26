@@ -1,7 +1,6 @@
-﻿namespace OcrFlow.Core.Flow.Models.Options
+﻿namespace OcrFlow.Core.Flow.Models.Options;
+
+public sealed class RotateOptions
 {
-    public sealed class RotateOptions
-    {
-        public bool Enabled { get; init; }
-    }
+    public bool Enabled { get; init; }
 }

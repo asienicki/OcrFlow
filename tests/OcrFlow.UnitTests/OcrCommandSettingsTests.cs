@@ -110,7 +110,7 @@ public sealed class OcrCommandSettingsTests
     }
 
     /// <summary>
-    /// Minimal helper to avoid touching real filesystem state.
+    ///     Minimal helper to avoid touching real filesystem state.
     /// </summary>
     private sealed class TempDir : IDisposable
     {

@@ -1,29 +1,28 @@
-﻿namespace OcrFlow.Markdown.Flow.Abstractions
+﻿namespace OcrFlow.Markdown.Flow.Abstractions;
+
+public interface IMarkdownFlow
 {
-    public interface IMarkdownFlow
-    {
-        IMarkdownFlow RomanNumerals();
+    IMarkdownFlow RomanNumerals();
 
-        IMarkdownFlow TextNormalization();
+    IMarkdownFlow TextNormalization();
 
-        IMarkdownFlow SpellCorrection(string dictPath);
+    IMarkdownFlow SpellCorrection(string dictPath);
 
-        IMarkdownFlow GarbageRemove();
+    IMarkdownFlow GarbageRemove();
 
-        IMarkdownFlow TitleMerge();
+    IMarkdownFlow TitleMerge();
 
-        IMarkdownFlow SectionLabels();
+    IMarkdownFlow SectionLabels();
 
-        IMarkdownFlow JoinLines();
+    IMarkdownFlow JoinLines();
 
-        IMarkdownFlow Identifiers();
+    IMarkdownFlow Identifiers();
 
-        IMarkdownFlow Headers();
+    IMarkdownFlow Headers();
 
-        IMarkdownFlow PlainText();
+    IMarkdownFlow PlainText();
 
-        IMarkdownFlow CommaSpacing();
+    IMarkdownFlow CommaSpacing();
 
-        TextProcess Build();
-    }
+    TextProcess Build();
 }

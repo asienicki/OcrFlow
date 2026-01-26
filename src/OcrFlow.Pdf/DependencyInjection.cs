@@ -2,16 +2,15 @@
 using OcrFlow.Core.Output.Abstractions;
 using OcrFlow.Pdf.Output;
 
-namespace OcrFlow.Pdf
-{
-    public static class DependencyInjection
-    {
-        public static IServiceCollection AddOcrPdf(
-            this IServiceCollection services)
-        {
-            _ = services.AddTransient<IOcrOutputStrategy, PdfOutputStrategy>();
+namespace OcrFlow.Pdf;
 
-            return services;
-        }
+public static class DependencyInjection
+{
+    public static IServiceCollection AddOcrPdf(
+        this IServiceCollection services)
+    {
+        _ = services.AddTransient<IOcrOutputStrategy, PdfOutputStrategy>();
+
+        return services;
     }
 }

@@ -10,10 +10,12 @@ namespace OcrFlow.Core.Flow.Steps;
 
 public sealed class DeskewStep : IOcrStep
 {
-    public bool IsEnabled { get; }
-
     public DeskewStep(IOptions<OcrFlowOptions> options)
-        => IsEnabled = options.Value.Deskew.Enabled;
+    {
+        IsEnabled = options.Value.Deskew.Enabled;
+    }
+
+    public bool IsEnabled { get; }
 
     public ValueTask ExecuteAsync(OcrState state, CancellationToken ct)
     {
@@ -55,10 +57,10 @@ public sealed class DeskewStep : IOcrStep
     private static double DetectSkewAngle(Image<Rgba32> image)
     {
         double bestAngle = 0;
-        double bestScore = double.MinValue;
+        var bestScore = double.MinValue;
 
         // realny zakres dla skanów
-        for (double angle = -3.0; angle <= 3.0; angle += 0.25)
+        for (var angle = -3.0; angle <= 3.0; angle += 0.25)
         {
             using var rotated = image.Clone(ctx => ctx
                 .Grayscale()
@@ -82,22 +84,22 @@ public sealed class DeskewStep : IOcrStep
 
         img.ProcessPixelRows(accessor =>
         {
-            for (int y = 0; y < accessor.Height; y++)
+            for (var y = 0; y < accessor.Height; y++)
             {
                 var row = accessor.GetRowSpan(y);
                 double sum = 0;
 
-                for (int x = 0; x < row.Length; x++)
+                for (var x = 0; x < row.Length; x++)
                     sum += row[x].R; // grayscale → R=G=B
 
                 sums[y] = sum;
             }
         });
 
-        double avg = sums.Average();
+        var avg = sums.Average();
         double variance = 0;
 
-        for (int i = 0; i < sums.Length; i++)
+        for (var i = 0; i < sums.Length; i++)
         {
             var d = sums[i] - avg;
             variance += d * d;

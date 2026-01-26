@@ -1,8 +1,7 @@
-﻿namespace OcrFlow.Core.Flow.Models.Options
+﻿namespace OcrFlow.Core.Flow.Models.Options;
+
+public sealed class NormalizeDpiOptions
 {
-    public sealed class NormalizeDpiOptions
-    {
-        public bool Enabled { get; init; } = true;
-        public int TargetDpi { get; init; } = 300;
-    }
+    public bool Enabled { get; init; } = true;
+    public int TargetDpi { get; init; } = 300;
 }

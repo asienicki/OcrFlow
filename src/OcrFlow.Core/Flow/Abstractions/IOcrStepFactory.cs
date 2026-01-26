@@ -1,7 +1,6 @@
-﻿namespace OcrFlow.Core.Flow.Abstractions
+﻿namespace OcrFlow.Core.Flow.Abstractions;
+
+public interface IOcrStepFactory
 {
-    public interface IOcrStepFactory
-    {
-        T Create<T>() where T : IOcrStep;
-    }
+    T Create<T>() where T : IOcrStep;
 }

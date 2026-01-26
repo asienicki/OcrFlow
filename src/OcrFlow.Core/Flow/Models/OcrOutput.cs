@@ -1,11 +1,10 @@
-﻿namespace OcrFlow.Core.Flow.Models
+﻿namespace OcrFlow.Core.Flow.Models;
+
+public class OcrOutput
 {
-    public class OcrOutput
-    {
-        public string HocrText { get; init; } = default!;
+    public string HocrText { get; init; } = default!;
 
-        public string? RawText { get; init; }
+    public string? RawText { get; init; }
 
-        public required string SourceImagePath { get; init; }
-    }
+    public required string SourceImagePath { get; init; }
 }

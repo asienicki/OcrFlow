@@ -1,16 +1,19 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using OcrFlow.Core.Flow.Abstractions;
 
-namespace OcrFlow.Core.Flow
+namespace OcrFlow.Core.Flow;
+
+public sealed class OcrStepFactory : IOcrStepFactory
 {
-    public sealed class OcrStepFactory : IOcrStepFactory
+    private readonly IServiceProvider _services;
+
+    public OcrStepFactory(IServiceProvider services)
     {
-        private readonly IServiceProvider _services;
+        _services = services;
+    }
 
-        public OcrStepFactory(IServiceProvider services)
-            => _services = services;
-
-        public T Create<T>() where T : IOcrStep
-            => _services.GetRequiredService<T>();
+    public T Create<T>() where T : IOcrStep
+    {
+        return _services.GetRequiredService<T>();
     }
 }

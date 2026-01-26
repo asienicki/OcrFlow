@@ -3,32 +3,31 @@ using OcrFlow.Core.Flow.Models;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Metadata.Profiles.Exif;
 
-namespace OcrFlow.Core.Flow.Steps
+namespace OcrFlow.Core.Flow.Steps;
+
+public sealed class LoadImageStep : IOcrStep
 {
-    public sealed class LoadImageStep : IOcrStep
+    public bool IsEnabled => true;
+
+    public async ValueTask ExecuteAsync(OcrState state, CancellationToken ct)
     {
-        public bool IsEnabled => true;
+        ArgumentNullException.ThrowIfNull(state);
 
-        public async ValueTask ExecuteAsync(OcrState state, CancellationToken ct)
-        {
-            ArgumentNullException.ThrowIfNull(state);
+        if (!File.Exists(state.Input.ImagePath))
+            throw new FileNotFoundException(
+                "Image file not found",
+                state.Input.ImagePath);
 
-            if (!File.Exists(state.Input.ImagePath))
-                throw new FileNotFoundException(
-                    "Image file not found",
-                    state.Input.ImagePath);
+        state.Image = await Image.LoadAsync(state.Input.ImagePath, ct);
 
-            state.Image = await Image.LoadAsync(state.Input.ImagePath, ct);
+        // DPI detection (fallback 300)
+        var exif = state.Image.Metadata.ExifProfile;
 
-            // DPI detection (fallback 300)
-            var exif = state.Image.Metadata.ExifProfile;
-
-            state.Dpi = exif is not null &&
-                exif.TryGetValue(ExifTag.XResolution, out var xRes) &&
-                xRes?.Value is SixLabors.ImageSharp.Rational r &&
-                r.Denominator != 0
-                ? (int)Math.Round((double)r.Numerator / r.Denominator)
-                : 300;
-        }
+        state.Dpi = exif is not null &&
+                    exif.TryGetValue(ExifTag.XResolution, out var xRes) &&
+                    xRes?.Value is Rational r &&
+                    r.Denominator != 0
+            ? (int)Math.Round((double)r.Numerator / r.Denominator)
+            : 300;
     }
 }

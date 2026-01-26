@@ -1,36 +1,35 @@
 ﻿using Spectre.Console;
 
-namespace OcrFlow.Cli.Diagnostics
+namespace OcrFlow.Cli.Diagnostics;
+
+public static class CrashReporter
 {
-    public static class CrashReporter
+    private static int _reported; // 0/1 – tylko raz
+
+    public static void Handle(Exception ex)
     {
-        private static int _reported; // 0/1 – tylko raz
+        if (ex == null) return;
+        if (Interlocked.Exchange(ref _reported, 1) == 1)
+            return;
 
-        public static void Handle(Exception ex)
+        try
         {
-            if (ex == null) return;
-            if (Interlocked.Exchange(ref _reported, 1) == 1)
-                return;
+            AnsiConsole.WriteException(ex);
 
-            try
-            {
-                AnsiConsole.WriteException(ex);
+            var formatted = SpectreExceptionFormatter.Format(ex);
+            var sanitized = ExceptionSanitizer.Sanitize(formatted);
 
-                var formatted = SpectreExceptionFormatter.Format(ex);
-                var sanitized = ExceptionSanitizer.Sanitize(formatted);
+            var hash = StackTraceHasher.Compute(sanitized);
+            var trimmed = ExceptionTrimmer.TrimSmart(sanitized);
 
-                var hash = StackTraceHasher.Compute(sanitized);
-                var trimmed = ExceptionTrimmer.TrimSmart(sanitized);
-
-                GitHubIssueReporter.ReportWithPrompt(
-                    $"[hash:{hash}]\n\n{trimmed}",
-                    hash
-                );
-            }
-            catch
-            {
-                // absolutny fallback: nie wysypuj crasha crashem
-            }
+            GitHubIssueReporter.ReportWithPrompt(
+                $"[hash:{hash}]\n\n{trimmed}",
+                hash
+            );
+        }
+        catch
+        {
+            // absolutny fallback: nie wysypuj crasha crashem
         }
     }
 }

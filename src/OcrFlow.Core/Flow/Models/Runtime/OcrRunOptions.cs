@@ -16,5 +16,6 @@
 
     public string? PdfFileNamePrefix { get; set; } = "";
 
-    public IReadOnlySet<string> ImageExtensions { get; init; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { ".png", ".jpg", ".jpeg" };
+    public IReadOnlySet<string> ImageExtensions { get; init; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        { ".png", ".jpg", ".jpeg" };
 }

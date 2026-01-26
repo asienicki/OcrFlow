@@ -1,6 +1,7 @@
 ﻿# OcrFlow
 
-**OcrFlow** is a lightweight, offline-first OCR pipeline for converting scanned images into searchable PDFs and structured Markdown.
+**OcrFlow** is a lightweight, offline-first OCR pipeline for converting scanned images into searchable PDFs and
+structured Markdown.
 
 ---
 
@@ -25,10 +26,10 @@ Get-ChildItem . -Recurse | Unblock-File
 * `<INPUT_DIR>` – directory containing images (PNG / JPG / PDF)
 * default behavior:
 
-  * PDF generation enabled
-  * merge enabled
-  * Markdown enabled
-  * result summary enabled
+    * PDF generation enabled
+    * merge enabled
+    * Markdown enabled
+    * result summary enabled
 * output files are created in the input directory (unless `--outputdir` is used)
 
 You can also pass input directory explicitly:

@@ -2,48 +2,61 @@
 using OcrFlow.Core.Flow.Steps;
 using OcrFlow.Core.Flow.Steps.Execution;
 
-namespace OcrFlow.Core.Flow
+namespace OcrFlow.Core.Flow;
+
+public sealed class OcrProcessFlow : IOcrProcessFlow
 {
-    public sealed class OcrProcessFlow : IOcrProcessFlow
+    private readonly IOcrStepFactory _factory;
+    private readonly List<Func<IOcrStepFactory, IOcrStep>> _stepFactories = [];
+
+    private OcrProcessFlow(IOcrStepFactory factory)
     {
-        private readonly IOcrStepFactory _factory;
-        private readonly List<Func<IOcrStepFactory, IOcrStep>> _stepFactories = [];
+        _factory = factory;
+    }
 
-        private OcrProcessFlow(IOcrStepFactory factory)
-            => _factory = factory;
+    public IOcrProcessFlow LoadImage()
+    {
+        return Add<LoadImageStep>();
+    }
 
-        public static OcrProcessFlow Start(IOcrStepFactory factory)
-            => new(factory);
+    public IOcrProcessFlow Rotate()
+    {
+        return Add<RotateStep>();
+    }
 
-        public IOcrProcessFlow LoadImage()
-            => Add<LoadImageStep>();
+    public IOcrProcessFlow Deskew()
+    {
+        return Add<DeskewStep>();
+    }
 
-        public IOcrProcessFlow Rotate()
-            => Add<RotateStep>();
+    public IOcrProcessFlow NormalizeDpi()
+    {
+        return Add<NormalizeDpiStep>();
+    }
 
-        public IOcrProcessFlow Deskew()
-            => Add<DeskewStep>();
+    public IOcrProcessFlow TesseractOcr()
+    {
+        return Add<TesseractOcrStep>();
+    }
 
-        public IOcrProcessFlow NormalizeDpi()
-            => Add<NormalizeDpiStep>();
+    public OcrProcess Build()
+    {
+        var steps = new IOcrStep[_stepFactories.Count];
 
-        public IOcrProcessFlow TesseractOcr()
-            => Add<TesseractOcrStep>();
+        for (var i = 0; i < _stepFactories.Count; i++)
+            steps[i] = _stepFactories[i](_factory);
 
-        public OcrProcess Build()
-        {
-            var steps = new IOcrStep[_stepFactories.Count];
+        return new OcrProcess(steps);
+    }
 
-            for (int i = 0; i < _stepFactories.Count; i++)
-                steps[i] = _stepFactories[i](_factory);
+    public static OcrProcessFlow Start(IOcrStepFactory factory)
+    {
+        return new OcrProcessFlow(factory);
+    }
 
-            return new OcrProcess(steps);
-        }
-
-        private IOcrProcessFlow Add<T>() where T : IOcrStep
-        {
-            _stepFactories.Add(f => f.Create<T>());
-            return this;
-        }
+    private IOcrProcessFlow Add<T>() where T : IOcrStep
+    {
+        _stepFactories.Add(f => f.Create<T>());
+        return this;
     }
 }

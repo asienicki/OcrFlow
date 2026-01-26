@@ -1,20 +1,19 @@
-﻿using OcrFlow.Application.Services;
+﻿using System.Diagnostics;
+using OcrFlow.Application.Services;
 using OcrFlow.Cli.Bootstrap;
 using OcrFlow.Cli.Ui;
 using OcrFlow.Core.Flow.Models;
 using OcrFlow.Core.Output.Abstractions;
-using Spectre.Console;
 using Spectre.Console.Cli;
-using System.Diagnostics;
 
 namespace OcrFlow.Cli.Commands;
 
 public sealed class OcrCommand : AsyncCommand<OcrCommandSettings>
 {
-    private readonly IOcrApplicationService _ocr;
-    private readonly OcrRunContext _context;
     private readonly OcrRunOptionsBuilder _builder;
+    private readonly OcrRunContext _context;
     private readonly IEnumerable<IOutputFinalizer> _finalizers;
+    private readonly IOcrApplicationService _ocr;
 
     public OcrCommand(
         IOcrApplicationService ocr,
@@ -40,9 +39,7 @@ public sealed class OcrCommand : AsyncCommand<OcrCommandSettings>
         await ProcessFilesAsync(options, cancellationToken);
 
         foreach (var finalizer in _finalizers.Where(x => x.ShouldRun()))
-        {
             await finalizer.FinalizeAsync(cancellationToken);
-        }
 
         return 0;
     }

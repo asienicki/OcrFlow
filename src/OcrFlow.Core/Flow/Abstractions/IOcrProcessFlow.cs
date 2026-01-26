@@ -1,19 +1,18 @@
 ﻿using OcrFlow.Core.Flow.Steps.Execution;
 
-namespace OcrFlow.Core.Flow.Abstractions
+namespace OcrFlow.Core.Flow.Abstractions;
+
+public interface IOcrProcessFlow
 {
-    public interface IOcrProcessFlow
-    {
-        IOcrProcessFlow LoadImage();
+    IOcrProcessFlow LoadImage();
 
-        IOcrProcessFlow Rotate();
+    IOcrProcessFlow Rotate();
 
-        IOcrProcessFlow Deskew();
+    IOcrProcessFlow Deskew();
 
-        IOcrProcessFlow NormalizeDpi();
+    IOcrProcessFlow NormalizeDpi();
 
-        IOcrProcessFlow TesseractOcr();
+    IOcrProcessFlow TesseractOcr();
 
-        OcrProcess Build();
-    }
+    OcrProcess Build();
 }

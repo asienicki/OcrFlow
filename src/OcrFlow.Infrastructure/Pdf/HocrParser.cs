@@ -1,7 +1,7 @@
-﻿using PdfSharp.Drawing;
-using PdfSharp.Pdf;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Text.RegularExpressions;
+using PdfSharp.Drawing;
+using PdfSharp.Pdf;
 
 namespace OcrFlow.Infrastructure.Pdf;
 
@@ -20,20 +20,20 @@ public static class HocrParser
         double dpiX,
         double dpiY)
     {
-        double scaleX = 72.0 / dpiX;
-        double scaleY = 72.0 / dpiY;
+        var scaleX = 72.0 / dpiX;
+        var scaleY = 72.0 / dpiY;
 
-        double pageHeightPt = page.Height.Point;
+        var pageHeightPt = page.Height.Point;
 
         foreach (Match line in LineRegex.Matches(hocr))
         {
-            double x1 = double.Parse(line.Groups[1].Value, CultureInfo.InvariantCulture) * scaleX;
-            double y1 = double.Parse(line.Groups[2].Value, CultureInfo.InvariantCulture) * scaleY;
+            var x1 = double.Parse(line.Groups[1].Value, CultureInfo.InvariantCulture) * scaleX;
+            var y1 = double.Parse(line.Groups[2].Value, CultureInfo.InvariantCulture) * scaleY;
             _ = double.Parse(line.Groups[3].Value, CultureInfo.InvariantCulture) * scaleX;
-            double y2 = double.Parse(line.Groups[4].Value, CultureInfo.InvariantCulture) * scaleY;
+            var y2 = double.Parse(line.Groups[4].Value, CultureInfo.InvariantCulture) * scaleY;
 
-            double height = y2 - y1;
-            double fontSize = height * 0.85;
+            var height = y2 - y1;
+            var fontSize = height * 0.85;
 
             var text = Regex
                 .Replace(line.Groups[6].Value, "<[^>]+>", " ")
@@ -52,8 +52,8 @@ public static class HocrParser
                 )
             );
 
-            double pdfX = x1;
-            double pdfY = pageHeightPt - y2;
+            var pdfX = x1;
+            var pdfY = pageHeightPt - y2;
 
             gfx.DrawString(
                 text,

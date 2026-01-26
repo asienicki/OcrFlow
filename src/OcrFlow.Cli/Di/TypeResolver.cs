@@ -8,11 +8,17 @@ public sealed class TypeResolver : ITypeResolver, IDisposable
     private readonly ServiceProvider _provider;
 
     public TypeResolver(ServiceProvider provider)
-        => _provider = provider;
-
-    public object? Resolve(Type? type)
-        => type is null ? null : _provider.GetRequiredService(type);
+    {
+        _provider = provider;
+    }
 
     public void Dispose()
-        => _provider.Dispose();
+    {
+        _provider.Dispose();
+    }
+
+    public object? Resolve(Type? type)
+    {
+        return type is null ? null : _provider.GetRequiredService(type);
+    }
 }

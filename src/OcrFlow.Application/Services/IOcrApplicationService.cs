@@ -1,11 +1,10 @@
 ﻿using OcrFlow.Core.Flow.Models;
 
-namespace OcrFlow.Application.Services
+namespace OcrFlow.Application.Services;
+
+public interface IOcrApplicationService
 {
-    public interface IOcrApplicationService
-    {
-        Task<OcrOutput> ProcessAsync(
-            OcrInput input,
-            CancellationToken ct);
-    }
+    Task<OcrOutput> ProcessAsync(
+        OcrInput input,
+        CancellationToken ct);
 }

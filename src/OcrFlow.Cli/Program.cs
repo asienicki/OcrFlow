@@ -45,12 +45,12 @@ internal static class Program
                 .ConfigureAppConfiguration(config =>
                 {
                     _ = config
-                        .AddJsonFile(Path.Combine(AppContext.BaseDirectory, "appsettings.json"), optional: false)
+                        .AddJsonFile(Path.Combine(AppContext.BaseDirectory, "appsettings.json"), false)
                         .AddJsonFile(
                             Path.Combine(
                                 AppContext.BaseDirectory,
                                 $"appsettings.{Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")}.json"),
-                            optional: true)
+                            true)
                         .AddEnvironmentVariables();
                 })
                 .ConfigureServices((ctx, _) =>

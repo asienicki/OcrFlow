@@ -1,6 +1,4 @@
-﻿using Spectre.Console;
-
-namespace OcrFlow.Cli.Extensions;
+﻿namespace OcrFlow.Cli.Extensions;
 
 public static class LangExtensions
 {
@@ -10,10 +8,10 @@ public static class LangExtensions
             return null; // auto z configu
 
         return lang == "*"
-            ? (new[] { "*" })
+            ? new[] { "*" }
             : lang
-            .Split(',', StringSplitOptions.RemoveEmptyEntries)
-            .Select(l => l.Trim())
-            .ToArray();
+                .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Select(l => l.Trim())
+                .ToArray();
     }
 }

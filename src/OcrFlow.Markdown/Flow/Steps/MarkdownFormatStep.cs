@@ -8,3 +8,4 @@
 //            => state.Text = MarkdownFormatter.Format(state.Text);
 //    }
 //}
+
