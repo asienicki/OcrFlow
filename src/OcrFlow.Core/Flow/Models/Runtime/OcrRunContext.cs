@@ -1,4 +1,6 @@
-﻿public sealed class OcrRunContext
+﻿namespace OcrFlow.Core.Flow.Models.Runtime;
+
+public sealed class OcrRunContext
 {
     public OcrRunOptions Options { get; private set; } = null!;
 

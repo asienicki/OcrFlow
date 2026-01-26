@@ -9,6 +9,7 @@ using OcrFlow.Cli.Diagnostics;
 using OcrFlow.Cli.Ui;
 using OcrFlow.Core;
 using OcrFlow.Core.Flow.Models.Options;
+using OcrFlow.Core.Flow.Models.Runtime;
 using OcrFlow.Core.Output.Abstractions;
 using OcrFlow.Infrastructure.Pdf;
 using OcrFlow.Markdown;
@@ -17,6 +18,8 @@ using OcrFlow.Pdf;
 using OcrFlow.Pdf.Output;
 using PdfSharp.Fonts;
 using Spectre.Console.Cli;
+
+namespace OcrFlow.Cli;
 
 internal static class Program
 {
@@ -78,7 +81,7 @@ internal static class Program
 
             app.Configure(cfg =>
             {
-                _ = cfg.SetApplicationName("ocrpdf");
+                _ = cfg.SetApplicationName("OcrFlow");
                 _ = cfg.ValidateExamples();
             });
 

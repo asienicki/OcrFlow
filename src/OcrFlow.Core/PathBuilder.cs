@@ -1,4 +1,6 @@
-﻿namespace OcrFlow.Core;
+﻿using OcrFlow.Core.Flow.Models.Runtime;
+
+namespace OcrFlow.Core;
 
 public static class PathBuilder
 {
