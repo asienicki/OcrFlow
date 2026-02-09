@@ -24,11 +24,13 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y jq unzip curl
 
-      - name: Cache license artifacts
+      - name: Cache NuGet license packages
         uses: actions/cache@v4
         with:
-          path: .licenses
+          path: .licenses/*.nupkg
           key: licenses-${{ runner.os }}-${{ hashFiles('licenses/policy.yml') }}
+          restore-keys: |
+            licenses-${{ runner.os }}-
 
       - name: Restore
         run: dotnet restore
@@ -102,10 +104,14 @@ jobs:
 
             URL="https://api.nuget.org/v3-flatcontainer/${NAME,,}/$VERSION/${NAME,,}.$VERSION.nupkg"
 
-            if ! curl -fsSL "$URL" -o "$NUPKG"; then
-              LICENSE="UNKNOWN"
-            else
-              unzip -qq -o "$NUPKG" '*.nuspec' -d "$TMP"
+            if [[ ! -f "$NUPKG" ]]; then
+              if ! curl -fsSL "$URL" -o "$NUPKG"; then
+                LICENSE="UNKNOWN"
+              fi
+            fi
+
+            if [[ -z "${LICENSE:-}" ]]; then
+              unzip -qq -o "$NUPKG" '*.nuspec' -d "$TMP" || true
               NUSPEC=$(ls "$TMP"/*.nuspec 2>/dev/null | head -n 1)
 
               if [[ -z "${NUSPEC:-}" ]]; then
@@ -121,10 +127,8 @@ jobs:
             LICENSE=$(normalize "$LICENSE")
             echo "   license: $LICENSE"
 
-            # --- CLASSIFICATION ---
             if [[ "$LICENSE" == "DEPRECATED_LICENSE_URL" ]]; then
               echo "::error::Unclassified dependency – deprecated licenseUrl used: $NAME $VERSION"
-              echo "::error::Deprecated licenseUrl"
               echo -e "$NAME\t$VERSION\t$LICENSE\tUNCLASSIFIED" >> "$RESULTS"
               FAIL=1
               continue
@@ -132,7 +136,6 @@ jobs:
 
             if [[ "$LICENSE" == "UNKNOWN" ]]; then
               echo "::error::Unclassified dependency – missing license: $NAME $VERSION"
-              echo "::error::Missing license"
               echo -e "$NAME\t$VERSION\t$LICENSE\tUNCLASSIFIED" >> "$RESULTS"
               FAIL=1
               continue
@@ -140,16 +143,13 @@ jobs:
 
             if echo "$BLACKLIST" | grep -qx "$LICENSE"; then
               echo "::error::Disallowed license detected: $NAME ($LICENSE)"
-              echo "::error::Disallowed license"
               echo -e "$NAME\t$VERSION\t$LICENSE\tDISALLOWED" >> "$RESULTS"
               FAIL=1
             elif echo "$WARNLIST" | grep -qx "$LICENSE"; then
               echo "::warning::Conditionally allowed license: $NAME ($LICENSE)"
-              echo "::warning::Conditionally allowed"
               echo -e "$NAME\t$VERSION\t$LICENSE\tCONDITIONALLY_ALLOWED" >> "$RESULTS"
             elif ! echo "$WHITELIST" | grep -qx "$LICENSE"; then
               echo "::error::Non-compliant license (not classified): $NAME ($LICENSE)"
-              echo "::error::Not classified"
               echo -e "$NAME\t$VERSION\t$LICENSE\tUNCLASSIFIED" >> "$RESULTS"
               FAIL=1
             else
