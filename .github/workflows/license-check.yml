@@ -152,6 +152,48 @@ jobs:
 
           exit $FAIL
 
+      - name: Comment license compliance summary on PR
+        if: github.event_name == 'pull_request'
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          RESULTS=".licenses/results.tsv"
+
+          echo "## 📜 License Compliance Report" > comment.md
+          echo "" >> comment.md
+
+          echo "### ❌ Non-compliant / Unclassified" >> comment.md
+          jq -r '
+            select(.status=="DISALLOWED" or .status=="UNCLASSIFIED")
+            | "- **\(.name)** \(.version) — \(.license)"
+          ' <(
+            awk -F'\t' '{print "{\"name\":\""$1"\",\"version\":\""$2"\",\"license\":\""$3"\",\"status\":\""$4"\"}"}' "$RESULTS"
+          ) >> comment.md || echo "- None" >> comment.md
+
+          echo "" >> comment.md
+          echo "### ⚠️ Conditionally Allowed (review required)" >> comment.md
+          jq -r '
+            select(.status=="CONDITIONALLY_ALLOWED")
+            | "- **\(.name)** \(.version) — \(.license)"
+          ' <(
+            awk -F'\t' '{print "{\"name\":\""$1"\",\"version\":\""$2"\",\"license\":\""$3"\",\"status\":\""$4"\"}"}' "$RESULTS"
+          ) >> comment.md || echo "- None" >> comment.md
+
+          echo "" >> comment.md
+          echo "### ✅ Summary (by license)" >> comment.md
+          awk -F'\t' '{print $3}' "$RESULTS" \
+            | sort \
+            | uniq -c \
+            | sort -nr \
+            | awk '{printf "- **%s**: %s dependencies\n", $2, $1}' >> comment.md
+
+          gh api repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments \
+            -f body="$(cat comment.md)"
+
+
       - name: Upload dependency inventory
         if: always()
         uses: actions/upload-artifact@v4
