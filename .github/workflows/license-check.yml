@@ -91,7 +91,7 @@ jobs:
                 FAIL=1
               else
                 echo "::notice::Exception applied for $NAME $VERSION ($EX_LICENSE)"
-                echo -e "$NAME\t$VERSION\t$EX_LICENSE\tOK" >> "$RESULTS"
+                echo -e "$NAME\t$VERSION\t$EX_LICENSE\tEXCEPTION" >> "$RESULTS"
               fi
               continue
             fi
