@@ -28,6 +28,9 @@ jobs:
             --include-transitive \
             --format json > packages.json
 
+      - name: Setup yq
+        uses: mikefarah/yq@v4
+
       - name: License policy check
         shell: bash
         run: |
@@ -46,7 +49,9 @@ jobs:
           FAIL=0
 
           jq -r '
-            .projects[].frameworks[].dependencies[]
+            .projects[]?
+            | .frameworks[]?
+            | .dependencies[]?
             | [.name, (.license // "UNKNOWN")] | @tsv
           ' packages.json | sort -u | while IFS=$'\t' read -r NAME LICENSE; do
 
