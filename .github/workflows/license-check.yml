@@ -44,11 +44,12 @@ jobs:
 
           normalize() {
             echo "$1" | sed -E '
+              s#https://licenses\.nuget\.org/MIT#MIT#I;
+              s#https://licenses\.nuget\.org/Apache-2\.0#Apache-2.0#I;
+              s#https://licenses\.nuget\.org/BSD-3-Clause#BSD-3-Clause#I;
+              s#https://licenses\.nuget\.org/BSD-2-Clause#BSD-2-Clause#I;
               s/ License//I;
               s/^Apache License 2.0$/Apache-2.0/I;
-              s/^MIT$/MIT/I;
-              s/^BSD 3-Clause$/BSD-3-Clause/I;
-              s/^BSD 2-Clause$/BSD-2-Clause/I
             '
           }
 
