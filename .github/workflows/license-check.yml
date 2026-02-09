@@ -1,4 +1,4 @@
-name: License check
+name: License compliance check
 
 on:
   push:
@@ -19,6 +19,17 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
+      - name: Ensure tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq unzip curl
+
+      - name: Cache license artifacts
+        uses: actions/cache@v4
+        with:
+          path: .licenses
+          key: licenses-${{ runner.os }}-${{ hashFiles('licenses/policy.yml') }}
+
       - name: Restore
         run: dotnet restore
 
@@ -31,13 +42,14 @@ jobs:
       - name: Setup yq
         uses: mikefarah/yq@v4
 
-      - name: License check (NuGet nuspec, safe)
+      - name: License compliance check (NuGet nuspec)
         shell: bash
         run: |
           set -euo pipefail
 
-          ALLOWED=$(yq -r '.whitelist[]' licenses/policy.yml)
-          FORBIDDEN=$(yq -r '.blacklist[]' licenses/policy.yml)
+          WHITELIST=$(yq -r '.whitelist[]' licenses/policy.yml)
+          WARNLIST=$(yq -r '.warnlist[]' licenses/policy.yml)
+          BLACKLIST=$(yq -r '.blacklist[]' licenses/policy.yml)
 
           mkdir -p .licenses/tmp
           FAIL=0
@@ -50,11 +62,31 @@ jobs:
               s#https://licenses\.nuget\.org/BSD-2-Clause#BSD-2-Clause#I;
               s/ License//I;
               s/^Apache License 2.0$/Apache-2.0/I;
-            '
+            ' | xargs
+          }
+
+          is_exception() {
+            local name=$1
+            local version=$2
+            yq -e ".exceptions.\"$name\" and .exceptions.\"$name\".version == \"$version\"" \
+              licenses/policy.yml > /dev/null 2>&1
           }
 
           while IFS=$'\t' read -r NAME VERSION; do
             echo "→ $NAME $VERSION"
+
+            if is_exception "$NAME" "$VERSION"; then
+              EX_LICENSE=$(yq -r ".exceptions.\"$NAME\".license" licenses/policy.yml)
+              EX_LICENSE=$(normalize "$EX_LICENSE")
+
+              if echo "$BLACKLIST" | grep -qx "$EX_LICENSE"; then
+                echo "::error::Exception violates blacklist: $NAME $VERSION ($EX_LICENSE)"
+                FAIL=1
+              else
+                echo "::notice::Exception applied for $NAME $VERSION ($EX_LICENSE)"
+              fi
+              continue
+            fi
 
             NUPKG=".licenses/$NAME.$VERSION.nupkg"
             TMP=".licenses/tmp/$NAME.$VERSION"
@@ -78,24 +110,27 @@ jobs:
             fi
 
             rm -rf "$TMP"
-
             LICENSE=$(normalize "$LICENSE")
             echo "   license: $LICENSE"
 
             if [[ "$LICENSE" == "UNKNOWN" ]]; then
-              echo "::warning::⚠️ $NAME $VERSION has UNKNOWN license"
+              echo "::error::Unclassified dependency – missing license: $NAME $VERSION"
+              FAIL=1
               continue
             fi
 
-            if echo "$FORBIDDEN" | grep -qx "$LICENSE"; then
-              echo "::error::❌ $NAME uses forbidden license: $LICENSE"
+            if echo "$BLACKLIST" | grep -qx "$LICENSE"; then
+              echo "::error::Disallowed license detected: $NAME ($LICENSE)"
               FAIL=1
-            elif ! echo "$ALLOWED" | grep -qx "$LICENSE"; then
-              echo "::error::❌ $NAME uses non-whitelisted license: $LICENSE"
+            elif echo "$WARNLIST" | grep -qx "$LICENSE"; then
+              echo "::warning::Conditionally allowed license: $NAME ($LICENSE)"
+            elif ! echo "$WHITELIST" | grep -qx "$LICENSE"; then
+              echo "::error::Non-compliant license (not classified): $NAME ($LICENSE)"
               FAIL=1
             else
-              echo "   ✅ allowed"
+              echo "   ✅ compliant"
             fi
+
           done < <(
             jq -r '
               .projects[]?
