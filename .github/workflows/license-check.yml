@@ -6,6 +6,10 @@ on:
   pull_request:
   workflow_dispatch:
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   license-check:
     runs-on: ubuntu-latest
@@ -22,7 +26,7 @@ jobs:
       - name: Ensure tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y jq unzip curl
+          sudo apt-get install -y jq unzip curl gh
 
       - name: Cache license artifacts
         uses: actions/cache@v4
@@ -52,6 +56,9 @@ jobs:
           BLACKLIST=$(yq -r '.blacklist[]' licenses/policy.yml)
 
           mkdir -p .licenses/tmp
+          RESULTS=".licenses/results.tsv"
+          > "$RESULTS"
+
           FAIL=0
 
           normalize() {
@@ -67,79 +74,62 @@ jobs:
           }
 
           is_exception() {
-            local name=$1
-            local version=$2
-            yq -e ".exceptions.\"$name\" and .exceptions.\"$name\".version == \"$version\"" \
+            yq -e ".exceptions.\"$1\" and .exceptions.\"$1\".version == \"$2\"" \
               licenses/policy.yml > /dev/null 2>&1
           }
 
           while IFS=$'\t' read -r NAME VERSION; do
-            echo "→ $NAME $VERSION"
+            STATUS=""
+            LICENSE=""
 
             # --- EXCEPTION (package + version) ---
             if is_exception "$NAME" "$VERSION"; then
-              EX_LICENSE=$(yq -r ".exceptions.\"$NAME\".license" licenses/policy.yml)
-              EX_LICENSE=$(normalize "$EX_LICENSE")
+              LICENSE=$(yq -r ".exceptions.\"$NAME\".license" licenses/policy.yml)
+              LICENSE=$(normalize "$LICENSE")
 
-              if echo "$BLACKLIST" | grep -qx "$EX_LICENSE"; then
-                echo "::error::Exception violates blacklist: $NAME $VERSION ($EX_LICENSE)"
+              if echo "$BLACKLIST" | grep -qx "$LICENSE"; then
+                STATUS="DISALLOWED"
                 FAIL=1
               else
-                echo "::notice::Exception applied for $NAME $VERSION ($EX_LICENSE)"
+                STATUS="EXCEPTION"
               fi
+
+              echo -e "$NAME\t$VERSION\t$LICENSE\t$STATUS" >> "$RESULTS"
               continue
             fi
 
             # --- FETCH NUSPEC ---
-            NUPKG=".licenses/$NAME.$VERSION.nupkg"
+            URL="https://api.nuget.org/v3-flatcontainer/${NAME,,}/$VERSION/${NAME,,}.$VERSION.nupkg"
             TMP=".licenses/tmp/$NAME.$VERSION"
             mkdir -p "$TMP"
 
-            URL="https://api.nuget.org/v3-flatcontainer/${NAME,,}/$VERSION/${NAME,,}.$VERSION.nupkg"
-
-            if ! curl -fsSL "$URL" -o "$NUPKG"; then
-              LICENSE="UNKNOWN"
-            else
-              unzip -qq -o "$NUPKG" '*.nuspec' -d "$TMP"
+            if curl -fsSL "$URL" -o "$TMP/pkg.nupkg"; then
+              unzip -qq -o "$TMP/pkg.nupkg" '*.nuspec' -d "$TMP"
               NUSPEC=$(ls "$TMP"/*.nuspec 2>/dev/null | head -n 1)
-
-              if [[ -z "${NUSPEC:-}" ]]; then
-                LICENSE="UNKNOWN"
-              else
-                LICENSE=$(sed -nE 's:.*<(licenseExpression|license)>([^<]+)<.*:\2:p' "$NUSPEC")
-                [[ -z "$LICENSE" ]] && LICENSE=$(sed -nE 's:.*<licenseUrl>([^<]+)<.*:\1:p' "$NUSPEC")
-                LICENSE=${LICENSE:-UNKNOWN}
-              fi
+              LICENSE=$(sed -nE 's:.*<(licenseExpression|license)>([^<]+)<.*:\2:p' "$NUSPEC")
+              [[ -z "$LICENSE" ]] && LICENSE=$(sed -nE 's:.*<licenseUrl>([^<]+)<.*:\1:p' "$NUSPEC")
             fi
 
             rm -rf "$TMP"
-            LICENSE=$(normalize "$LICENSE")
-            echo "   license: $LICENSE"
+            LICENSE=$(normalize "${LICENSE:-UNKNOWN}")
 
             # --- CLASSIFICATION ---
-            if [[ "$LICENSE" == "DEPRECATED_LICENSE_URL" ]]; then
-              echo "::error::Unclassified dependency – deprecated licenseUrl used: $NAME $VERSION"
+            if [[ "$LICENSE" == "DEPRECATED_LICENSE_URL" || "$LICENSE" == "UNKNOWN" ]]; then
+              STATUS="UNCLASSIFIED"
               FAIL=1
-              continue
-            fi
-
-            if [[ "$LICENSE" == "UNKNOWN" ]]; then
-              echo "::error::Unclassified dependency – missing license: $NAME $VERSION"
-              FAIL=1
-              continue
-            fi
-
-            if echo "$BLACKLIST" | grep -qx "$LICENSE"; then
-              echo "::error::Disallowed license detected: $NAME ($LICENSE)"
+            elif echo "$BLACKLIST" | grep -qx "$LICENSE"; then
+              STATUS="DISALLOWED"
               FAIL=1
             elif echo "$WARNLIST" | grep -qx "$LICENSE"; then
-              echo "::warning::Conditionally allowed license: $NAME ($LICENSE)"
-            elif ! echo "$WHITELIST" | grep -qx "$LICENSE"; then
-              echo "::error::Non-compliant license (not classified): $NAME ($LICENSE)"
-              FAIL=1
+              STATUS="CONDITIONALLY_ALLOWED"
+            elif echo "$WHITELIST" | grep -qx "$LICENSE"; then
+              STATUS="COMPLIANT"
             else
-              echo "   ✅ compliant"
+              STATUS="UNCLASSIFIED"
+              FAIL=1
             fi
+
+            echo -e "$NAME\t$VERSION\t$LICENSE\t$STATUS" >> "$RESULTS"
 
           done < <(
             jq -r '
@@ -158,45 +148,21 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          set -euo pipefail
-
           RESULTS=".licenses/results.tsv"
 
-          echo "## 📜 License Compliance Report" > comment.md
-          echo "" >> comment.md
-
-          echo "### ❌ Non-compliant / Unclassified" >> comment.md
-          jq -r '
-            select(.status=="DISALLOWED" or .status=="UNCLASSIFIED")
-            | "- **\(.name)** \(.version) — \(.license)"
-          ' <(
-            awk -F'\t' '{print "{\"name\":\""$1"\",\"version\":\""$2"\",\"license\":\""$3"\",\"status\":\""$4"\"}"}' "$RESULTS"
-          ) >> comment.md || echo "- None" >> comment.md
-
-          echo "" >> comment.md
-          echo "### ⚠️ Conditionally Allowed (review required)" >> comment.md
-          jq -r '
-            select(.status=="CONDITIONALLY_ALLOWED")
-            | "- **\(.name)** \(.version) — \(.license)"
-          ' <(
-            awk -F'\t' '{print "{\"name\":\""$1"\",\"version\":\""$2"\",\"license\":\""$3"\",\"status\":\""$4"\"}"}' "$RESULTS"
-          ) >> comment.md || echo "- None" >> comment.md
-
-          echo "" >> comment.md
-          echo "### ✅ Summary (by license)" >> comment.md
-          awk -F'\t' '{print $3}' "$RESULTS" \
-            | sort \
-            | uniq -c \
-            | sort -nr \
-            | awk '{printf "- **%s**: %s dependencies\n", $2, $1}' >> comment.md
+          {
+            echo "## 📜 License Compliance Report"
+            echo ""
+            echo "### ❌ Non-compliant / Unclassified"
+            awk -F'\t' '$4=="DISALLOWED" || $4=="UNCLASSIFIED" {printf "- **%s** %s — %s\n",$1,$2,$3}' "$RESULTS" || echo "- None"
+            echo ""
+            echo "### ⚠️ Conditionally Allowed (review required)"
+            awk -F'\t' '$4=="CONDITIONALLY_ALLOWED" {printf "- **%s** %s — %s\n",$1,$2,$3}' "$RESULTS" || echo "- None"
+            echo ""
+            echo "### ✅ Summary (by license)"
+            awk -F'\t' '{print $3}' "$RESULTS" | sort | uniq -c | sort -nr \
+              | awk '{printf "- **%s**: %s dependencies\n",$2,$1}'
+          } > comment.md
 
           gh api repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments \
             -f body="$(cat comment.md)"
-
-
-      - name: Upload dependency inventory
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: dependency-inventory
-          path: packages.json
