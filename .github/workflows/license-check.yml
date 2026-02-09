@@ -168,21 +168,34 @@ jobs:
         run: |
           set -euo pipefail
 
+          RESULTS=".licenses/results.tsv"
+
           echo "## 📜 License Compliance Report" > comment.md
-          echo "" >> comment.md
 
-          echo "### ❌ Non-compliant / Unclassified" >> comment.md
-          awk -F'\t' '$4=="DISALLOWED" || $4=="UNCLASSIFIED" {printf "- **%s** %s — %s\n",$1,$2,$3}' \
-            .licenses/results.tsv >> comment.md || true
+          # ❌ Non-compliant / Unclassified
+          if awk -F'\t' '$4=="DISALLOWED" || $4=="UNCLASSIFIED" {exit 1}' "$RESULTS"; then
+            :
+          else
+            echo "" >> comment.md
+            echo "### ❌ Non-compliant / Unclassified" >> comment.md
+            awk -F'\t' '$4=="DISALLOWED" || $4=="UNCLASSIFIED" {printf "- **%s** %s — %s\n",$1,$2,$3}' \
+              "$RESULTS" >> comment.md
+          fi
 
-          echo "" >> comment.md
-          echo "### ⚠️ Conditionally Allowed" >> comment.md
-          awk -F'\t' '$4=="CONDITIONALLY_ALLOWED" {printf "- **%s** %s — %s\n",$1,$2,$3}' \
-            .licenses/results.tsv >> comment.md || true
+          # ⚠️ Conditionally Allowed
+          if awk -F'\t' '$4=="CONDITIONALLY_ALLOWED" {exit 1}' "$RESULTS"; then
+            :
+          else
+            echo "" >> comment.md
+            echo "### ⚠️ Conditionally Allowed" >> comment.md
+            awk -F'\t' '$4=="CONDITIONALLY_ALLOWED" {printf "- **%s** %s — %s\n",$1,$2,$3}' \
+              "$RESULTS" >> comment.md
+          fi
 
+          # ✅ Summary (by license) – zawsze ma sens
           echo "" >> comment.md
           echo "### ✅ Summary (by license)" >> comment.md
-          awk -F'\t' '{print $3}' .licenses/results.tsv \
+          awk -F'\t' '{print $3}' "$RESULTS" \
             | sort | uniq -c | sort -nr \
             | awk '{printf "- **%s**: %s deps\n",$2,$1}' >> comment.md
 
