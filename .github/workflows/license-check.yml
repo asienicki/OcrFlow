@@ -22,7 +22,7 @@ jobs:
       - name: Restore
         run: dotnet restore
 
-      - name: Export packages (with licenses)
+      - name: Export dependency list
         run: |
           dotnet list package \
             --include-transitive \
@@ -31,7 +31,7 @@ jobs:
       - name: Setup yq
         uses: mikefarah/yq@v4
 
-      - name: License policy check
+      - name: License check (NuGet nuspec)
         shell: bash
         run: |
           set -euo pipefail
@@ -39,19 +39,42 @@ jobs:
           ALLOWED=$(yq -r '.whitelist[]' licenses/policy.yml)
           FORBIDDEN=$(yq -r '.blacklist[]' licenses/policy.yml)
 
-          echo "Allowed:"
-          echo "$ALLOWED"
-          echo
-          echo "Forbidden:"
-          echo "$FORBIDDEN"
-          echo
-
+          mkdir -p .licenses
           FAIL=0
 
-          while IFS=$'\t' read -r NAME LICENSE; do
-            echo "→ $NAME | $LICENSE"
+          jq -r '
+            .projects[]?
+            | .frameworks[]?
+            | (.topLevelPackages[]?, .transitivePackages[]?)
+            | [.id, .resolvedVersion] | @tsv
+          ' packages.json | sort -u | while IFS=$'\t' read -r NAME VERSION; do
 
-            if [[ "$LICENSE" == "UNKNOWN" ]]; then
+            echo "→ $NAME $VERSION"
+
+            NUPKG=".licenses/$NAME.$VERSION.nupkg"
+            URL="https://api.nuget.org/v3-flatcontainer/${NAME,,}/$VERSION/${NAME,,}.$VERSION.nupkg"
+
+            if ! curl -fsSL "$URL" -o "$NUPKG"; then
+              echo "::error::❌ cannot download $NAME $VERSION"
+              FAIL=1
+              continue
+            fi
+
+            unzip -qq -o "$NUPKG" '*.nuspec' -d .licenses
+
+            NUSPEC=$(find .licenses -name '*.nuspec' | head -n 1)
+
+            LICENSE=$(
+              xmllint --xpath \
+              'string(//license | //licenseExpression | //licenseUrl)' \
+              "$NUSPEC" 2>/dev/null || echo "UNKNOWN"
+            )
+
+            rm -f "$NUSPEC"
+
+            echo "   license: $LICENSE"
+
+            if [[ "$LICENSE" == "UNKNOWN" || -z "$LICENSE" ]]; then
               echo "::error::❌ $NAME has UNKNOWN license"
               FAIL=1
               continue
@@ -61,25 +84,18 @@ jobs:
               echo "::error::❌ $NAME uses forbidden license: $LICENSE"
               FAIL=1
             elif echo "$ALLOWED" | grep -qx "$LICENSE"; then
-              echo "✅ $NAME ($LICENSE)"
+              echo "   ✅ allowed"
             else
               echo "::error::❌ $NAME uses non-whitelisted license: $LICENSE"
               FAIL=1
             fi
-          done < <(
-            jq -r '
-              .projects[]?
-              | .frameworks[]?
-              | .dependencies[]?
-              | [.name, (.license // "UNKNOWN")] | @tsv
-            ' packages.json | sort -u
-          )
+          done
 
           exit $FAIL
 
-      - name: Upload license report
+      - name: Upload dependency inventory
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: license-report
+          name: dependency-inventory
           path: packages.json
