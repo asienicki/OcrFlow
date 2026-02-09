@@ -1,0 +1,27 @@
+whitelist:
+  - MIT
+  - MIT license
+  - Apache-2.0
+  - BSD-2-Clause
+  - BSD-3-Clause
+  - ISC
+
+warnlist:
+  - LGPL-2.1
+  - LGPL-3.0
+
+blacklist:
+  - GPL-2.0
+  - GPL-3.0
+  - AGPL-3.0
+
+exceptions:
+  SixLabors.ImageSharp:
+    license: Six-Labors-Split
+    version: "3.1.12"
+    rationale: "Allowed under Apache-2.0 for OSS, transitive use, or <1M USD revenue"
+  xunit.abstractions:
+    version: "2.0.3"
+    license: Apache-2.0
+    source: https://raw.githubusercontent.com/xunit/xunit/master/license.txt
+    rationale: "Package license is Apache-2.0; repository contains MIT-licensed components, which are compatible. Approved manually."
