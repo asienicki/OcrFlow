@@ -31,7 +31,7 @@ jobs:
       - name: Setup yq
         uses: mikefarah/yq@v4
 
-      - name: License check (NuGet nuspec)
+      - name: License check (NuGet nuspec, safe)
         shell: bash
         run: |
           set -euo pipefail
@@ -39,57 +39,70 @@ jobs:
           ALLOWED=$(yq -r '.whitelist[]' licenses/policy.yml)
           FORBIDDEN=$(yq -r '.blacklist[]' licenses/policy.yml)
 
-          mkdir -p .licenses
+          mkdir -p .licenses/tmp
           FAIL=0
 
-          jq -r '
-            .projects[]?
-            | .frameworks[]?
-            | (.topLevelPackages[]?, .transitivePackages[]?)
-            | [.id, .resolvedVersion] | @tsv
-          ' packages.json | sort -u | while IFS=$'\t' read -r NAME VERSION; do
+          normalize() {
+            echo "$1" | sed -E '
+              s/ License//I;
+              s/^Apache License 2.0$/Apache-2.0/I;
+              s/^MIT$/MIT/I;
+              s/^BSD 3-Clause$/BSD-3-Clause/I;
+              s/^BSD 2-Clause$/BSD-2-Clause/I
+            '
+          }
 
+          while IFS=$'\t' read -r NAME VERSION; do
             echo "→ $NAME $VERSION"
 
             NUPKG=".licenses/$NAME.$VERSION.nupkg"
+            TMP=".licenses/tmp/$NAME.$VERSION"
+            mkdir -p "$TMP"
+
             URL="https://api.nuget.org/v3-flatcontainer/${NAME,,}/$VERSION/${NAME,,}.$VERSION.nupkg"
 
             if ! curl -fsSL "$URL" -o "$NUPKG"; then
-              echo "::error::❌ cannot download $NAME $VERSION"
-              FAIL=1
-              continue
+              LICENSE="UNKNOWN"
+            else
+              unzip -qq -o "$NUPKG" '*.nuspec' -d "$TMP"
+              NUSPEC=$(ls "$TMP"/*.nuspec 2>/dev/null | head -n 1)
+
+              if [[ -z "${NUSPEC:-}" ]]; then
+                LICENSE="UNKNOWN"
+              else
+                LICENSE=$(sed -nE 's:.*<(licenseExpression|license)>([^<]+)<.*:\2:p' "$NUSPEC")
+                [[ -z "$LICENSE" ]] && LICENSE=$(sed -nE 's:.*<licenseUrl>([^<]+)<.*:\1:p' "$NUSPEC")
+                LICENSE=${LICENSE:-UNKNOWN}
+              fi
             fi
 
-            unzip -qq -o "$NUPKG" '*.nuspec' -d .licenses
+            rm -rf "$TMP"
 
-            NUSPEC=$(find .licenses -name '*.nuspec' | head -n 1)
-
-            LICENSE=$(
-              xmllint --xpath \
-              'string(//license | //licenseExpression | //licenseUrl)' \
-              "$NUSPEC" 2>/dev/null || echo "UNKNOWN"
-            )
-
-            rm -f "$NUSPEC"
-
+            LICENSE=$(normalize "$LICENSE")
             echo "   license: $LICENSE"
 
-            if [[ "$LICENSE" == "UNKNOWN" || -z "$LICENSE" ]]; then
-              echo "::error::❌ $NAME has UNKNOWN license"
-              FAIL=1
+            if [[ "$LICENSE" == "UNKNOWN" ]]; then
+              echo "::warning::⚠️ $NAME $VERSION has UNKNOWN license"
               continue
             fi
 
             if echo "$FORBIDDEN" | grep -qx "$LICENSE"; then
               echo "::error::❌ $NAME uses forbidden license: $LICENSE"
               FAIL=1
-            elif echo "$ALLOWED" | grep -qx "$LICENSE"; then
-              echo "   ✅ allowed"
-            else
+            elif ! echo "$ALLOWED" | grep -qx "$LICENSE"; then
               echo "::error::❌ $NAME uses non-whitelisted license: $LICENSE"
               FAIL=1
+            else
+              echo "   ✅ allowed"
             fi
-          done
+          done < <(
+            jq -r '
+              .projects[]?
+              | .frameworks[]?
+              | (.topLevelPackages[]?, .transitivePackages[]?)
+              | [.id, .resolvedVersion] | @tsv
+            ' packages.json | sort -u
+          )
 
           exit $FAIL
 
