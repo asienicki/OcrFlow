@@ -182,6 +182,16 @@ jobs:
               "$RESULTS" >> comment.md
           fi
 
+          # 🟦 Exceptions applied
+          if awk -F'\t' '$4=="EXCEPTION" {exit 1}' "$RESULTS"; then
+            :
+          else
+            echo "" >> comment.md
+            echo "### 🟦 Exceptions applied" >> comment.md
+            awk -F'\t' '$4=="EXCEPTION" {printf "- **%s** %s — %s\n",$1,$2,$3}' \
+              "$RESULTS" >> comment.md
+          fi
+
           # ⚠️ Conditionally Allowed
           if awk -F'\t' '$4=="CONDITIONALLY_ALLOWED" {exit 1}' "$RESULTS"; then
             :
