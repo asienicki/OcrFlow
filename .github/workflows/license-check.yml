@@ -60,6 +60,7 @@ jobs:
               s#https://licenses\.nuget\.org/Apache-2\.0#Apache-2.0#I;
               s#https://licenses\.nuget\.org/BSD-3-Clause#BSD-3-Clause#I;
               s#https://licenses\.nuget\.org/BSD-2-Clause#BSD-2-Clause#I;
+              s#https://aka.ms/deprecateLicenseUrl#DEPRECATED_LICENSE_URL#I;
               s/ License//I;
               s/^Apache License 2.0$/Apache-2.0/I;
             ' | xargs
@@ -75,6 +76,7 @@ jobs:
           while IFS=$'\t' read -r NAME VERSION; do
             echo "→ $NAME $VERSION"
 
+            # --- EXCEPTION (package + version) ---
             if is_exception "$NAME" "$VERSION"; then
               EX_LICENSE=$(yq -r ".exceptions.\"$NAME\".license" licenses/policy.yml)
               EX_LICENSE=$(normalize "$EX_LICENSE")
@@ -88,6 +90,7 @@ jobs:
               continue
             fi
 
+            # --- FETCH NUSPEC ---
             NUPKG=".licenses/$NAME.$VERSION.nupkg"
             TMP=".licenses/tmp/$NAME.$VERSION"
             mkdir -p "$TMP"
@@ -112,6 +115,13 @@ jobs:
             rm -rf "$TMP"
             LICENSE=$(normalize "$LICENSE")
             echo "   license: $LICENSE"
+
+            # --- CLASSIFICATION ---
+            if [[ "$LICENSE" == "DEPRECATED_LICENSE_URL" ]]; then
+              echo "::error::Unclassified dependency – deprecated licenseUrl used: $NAME $VERSION"
+              FAIL=1
+              continue
+            fi
 
             if [[ "$LICENSE" == "UNKNOWN" ]]; then
               echo "::error::Unclassified dependency – missing license: $NAME $VERSION"
