@@ -48,12 +48,8 @@ jobs:
 
           FAIL=0
 
-          jq -r '
-            .projects[]?
-            | .frameworks[]?
-            | .dependencies[]?
-            | [.name, (.license // "UNKNOWN")] | @tsv
-          ' packages.json | sort -u | while IFS=$'\t' read -r NAME LICENSE; do
+          while IFS=$'\t' read -r NAME LICENSE; do
+            echo "→ $NAME | $LICENSE"
 
             if [[ "$LICENSE" == "UNKNOWN" ]]; then
               echo "::error::❌ $NAME has UNKNOWN license"
@@ -70,6 +66,20 @@ jobs:
               echo "::error::❌ $NAME uses non-whitelisted license: $LICENSE"
               FAIL=1
             fi
-          done
+          done < <(
+            jq -r '
+              .projects[]?
+              | .frameworks[]?
+              | .dependencies[]?
+              | [.name, (.license // "UNKNOWN")] | @tsv
+            ' packages.json | sort -u
+          )
 
           exit $FAIL
+
+      - name: Upload license report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: license-report
+          path: packages.json
