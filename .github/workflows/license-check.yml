@@ -47,11 +47,14 @@ jobs:
         run: |
           set -euo pipefail
 
+          RESULTS=".licenses/results.tsv"
+          mkdir -p .licenses/tmp
+          : > "$RESULTS"
+
           WHITELIST=$(yq -r '.whitelist[]' licenses/policy.yml)
           WARNLIST=$(yq -r '.warnlist[]' licenses/policy.yml)
           BLACKLIST=$(yq -r '.blacklist[]' licenses/policy.yml)
 
-          mkdir -p .licenses/tmp
           FAIL=0
 
           normalize() {
@@ -76,21 +79,23 @@ jobs:
           while IFS=$'\t' read -r NAME VERSION; do
             echo "→ $NAME $VERSION"
 
-            # --- EXCEPTION (package + version) ---
             if is_exception "$NAME" "$VERSION"; then
               EX_LICENSE=$(yq -r ".exceptions.\"$NAME\".license" licenses/policy.yml)
               EX_LICENSE=$(normalize "$EX_LICENSE")
 
+              echo "   exception license: $EX_LICENSE"
+
               if echo "$BLACKLIST" | grep -qx "$EX_LICENSE"; then
                 echo "::error::Exception violates blacklist: $NAME $VERSION ($EX_LICENSE)"
+                echo -e "$NAME\t$VERSION\t$EX_LICENSE\tDISALLOWED" >> "$RESULTS"
                 FAIL=1
               else
-                echo "::notice::Exception applied for $NAME $VERSION ($EX_LICENSE)"
+                echo "::notice::Exception applied"
+                echo -e "$NAME\t$VERSION\t$EX_LICENSE\tOK" >> "$RESULTS"
               fi
               continue
             fi
 
-            # --- FETCH NUSPEC ---
             NUPKG=".licenses/$NAME.$VERSION.nupkg"
             TMP=".licenses/tmp/$NAME.$VERSION"
             mkdir -p "$TMP"
@@ -119,26 +124,37 @@ jobs:
             # --- CLASSIFICATION ---
             if [[ "$LICENSE" == "DEPRECATED_LICENSE_URL" ]]; then
               echo "::error::Unclassified dependency – deprecated licenseUrl used: $NAME $VERSION"
+              echo "::error::Deprecated licenseUrl"
+              echo -e "$NAME\t$VERSION\t$LICENSE\tUNCLASSIFIED" >> "$RESULTS"
               FAIL=1
               continue
             fi
 
             if [[ "$LICENSE" == "UNKNOWN" ]]; then
               echo "::error::Unclassified dependency – missing license: $NAME $VERSION"
+              echo "::error::Missing license"
+              echo -e "$NAME\t$VERSION\t$LICENSE\tUNCLASSIFIED" >> "$RESULTS"
               FAIL=1
               continue
             fi
 
             if echo "$BLACKLIST" | grep -qx "$LICENSE"; then
               echo "::error::Disallowed license detected: $NAME ($LICENSE)"
+              echo "::error::Disallowed license"
+              echo -e "$NAME\t$VERSION\t$LICENSE\tDISALLOWED" >> "$RESULTS"
               FAIL=1
             elif echo "$WARNLIST" | grep -qx "$LICENSE"; then
               echo "::warning::Conditionally allowed license: $NAME ($LICENSE)"
+              echo "::warning::Conditionally allowed"
+              echo -e "$NAME\t$VERSION\t$LICENSE\tCONDITIONALLY_ALLOWED" >> "$RESULTS"
             elif ! echo "$WHITELIST" | grep -qx "$LICENSE"; then
               echo "::error::Non-compliant license (not classified): $NAME ($LICENSE)"
+              echo "::error::Not classified"
+              echo -e "$NAME\t$VERSION\t$LICENSE\tUNCLASSIFIED" >> "$RESULTS"
               FAIL=1
             else
               echo "   ✅ compliant"
+              echo -e "$NAME\t$VERSION\t$LICENSE\tOK" >> "$RESULTS"
             fi
 
           done < <(
@@ -152,51 +168,41 @@ jobs:
 
           exit $FAIL
 
-      - name: Comment license compliance summary on PR
+      - name: Build PR comment
         if: github.event_name == 'pull_request'
         shell: bash
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-
-          RESULTS=".licenses/results.tsv"
 
           echo "## 📜 License Compliance Report" > comment.md
           echo "" >> comment.md
 
           echo "### ❌ Non-compliant / Unclassified" >> comment.md
-          jq -r '
-            select(.status=="DISALLOWED" or .status=="UNCLASSIFIED")
-            | "- **\(.name)** \(.version) — \(.license)"
-          ' <(
-            awk -F'\t' '{print "{\"name\":\""$1"\",\"version\":\""$2"\",\"license\":\""$3"\",\"status\":\""$4"\"}"}' "$RESULTS"
-          ) >> comment.md || echo "- None" >> comment.md
+          awk -F'\t' '$4=="DISALLOWED" || $4=="UNCLASSIFIED" {printf "- **%s** %s — %s\n",$1,$2,$3}' \
+            .licenses/results.tsv >> comment.md || true
 
           echo "" >> comment.md
-          echo "### ⚠️ Conditionally Allowed (review required)" >> comment.md
-          jq -r '
-            select(.status=="CONDITIONALLY_ALLOWED")
-            | "- **\(.name)** \(.version) — \(.license)"
-          ' <(
-            awk -F'\t' '{print "{\"name\":\""$1"\",\"version\":\""$2"\",\"license\":\""$3"\",\"status\":\""$4"\"}"}' "$RESULTS"
-          ) >> comment.md || echo "- None" >> comment.md
+          echo "### ⚠️ Conditionally Allowed" >> comment.md
+          awk -F'\t' '$4=="CONDITIONALLY_ALLOWED" {printf "- **%s** %s — %s\n",$1,$2,$3}' \
+            .licenses/results.tsv >> comment.md || true
 
           echo "" >> comment.md
           echo "### ✅ Summary (by license)" >> comment.md
-          awk -F'\t' '{print $3}' "$RESULTS" \
-            | sort \
-            | uniq -c \
-            | sort -nr \
-            | awk '{printf "- **%s**: %s dependencies\n", $2, $1}' >> comment.md
+          awk -F'\t' '{print $3}' .licenses/results.tsv \
+            | sort | uniq -c | sort -nr \
+            | awk '{printf "- **%s**: %s deps\n",$2,$1}' >> comment.md
 
-          gh api repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments \
-            -f body="$(cat comment.md)"
-
-
-      - name: Upload dependency inventory
-        if: always()
-        uses: actions/upload-artifact@v4
+      - name: Comment on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
         with:
-          name: dependency-inventory
-          path: packages.json
+          script: |
+            const fs = require('fs');
+            const body = fs.readFileSync('comment.md', 'utf8');
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body
+            });
