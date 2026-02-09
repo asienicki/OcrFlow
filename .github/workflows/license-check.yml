@@ -47,8 +47,9 @@ jobs:
 
           jq -r '
             .projects[].frameworks[].dependencies[]
-            | "\(.name)|\(.license ?? "UNKNOWN")"
-          ' packages.json | sort -u | while IFS="|" read -r NAME LICENSE; do
+            | [.name, (.license // "UNKNOWN")] | @tsv
+          ' packages.json | sort -u | while IFS=$'\t' read -r NAME LICENSE; do
+
             if [[ "$LICENSE" == "UNKNOWN" ]]; then
               echo "::error::❌ $NAME has UNKNOWN license"
               FAIL=1
