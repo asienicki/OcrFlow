@@ -1,39 +1,69 @@
 name: License check
 
 on:
-  pull_request:
   push:
-    branches: [ main ]
+    branches: [ "main", "feat/**" ]
+  pull_request:
+  workflow_dispatch:
 
 jobs:
-  licenses:
+  license-check:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 10.0.x
+          dotnet-version: '8.0.x'
 
-      - name: Install dotnet-project-licenses
-        run: dotnet tool install --global dotnet-project-licenses --version 2.7.1
+      - name: Restore
+        run: dotnet restore
 
-      - name: Enable yq
-        uses: mikefarah/yq@v4
-
-      # === HARD RULES ===
-      # GREEN      -> whitelist
-      # RED        -> blacklist
-      # TURBO RED  -> missing / unknown license
-      - name: License check (hard rules)
+      - name: Export packages (with licenses)
         run: |
-          ALLOWED=$(yq '.whitelist[]' licenses/policy.yml | tr '\n' ' ')
-          FORBIDDEN=$(yq '.blacklist[]' licenses/policy.yml | tr '\n' ' ')
+          dotnet list package \
+            --include-transitive \
+            --format json > packages.json
 
-          dotnet-project-licenses \
-            --input . \
-            --allowed-license-types $ALLOWED \
-            --forbidden-license-types $FORBIDDEN \
-            --fail-on-missing-l
+      - name: License policy check
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          ALLOWED=$(yq -r '.whitelist[]' licenses/policy.yml)
+          FORBIDDEN=$(yq -r '.blacklist[]' licenses/policy.yml)
+
+          echo "Allowed:"
+          echo "$ALLOWED"
+          echo
+          echo "Forbidden:"
+          echo "$FORBIDDEN"
+          echo
+
+          FAIL=0
+
+          jq -r '
+            .projects[].frameworks[].dependencies[]
+            | "\(.name)|\(.license ?? "UNKNOWN")"
+          ' packages.json | sort -u | while IFS="|" read -r NAME LICENSE; do
+            if [[ "$LICENSE" == "UNKNOWN" ]]; then
+              echo "::error::❌ $NAME has UNKNOWN license"
+              FAIL=1
+              continue
+            fi
+
+            if echo "$FORBIDDEN" | grep -qx "$LICENSE"; then
+              echo "::error::❌ $NAME uses forbidden license: $LICENSE"
+              FAIL=1
+            elif echo "$ALLOWED" | grep -qx "$LICENSE"; then
+              echo "✅ $NAME ($LICENSE)"
+            else
+              echo "::error::❌ $NAME uses non-whitelisted license: $LICENSE"
+              FAIL=1
+            fi
+          done
+
+          exit $FAIL
