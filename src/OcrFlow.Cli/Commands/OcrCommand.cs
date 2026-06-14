@@ -28,7 +28,7 @@ public sealed class OcrCommand : AsyncCommand<OcrCommandSettings>
         _finalizers = finalizers;
     }
 
-    public override async Task<int> ExecuteAsync(
+    protected override async Task<int> ExecuteAsync(
         CommandContext context,
         OcrCommandSettings settings,
         CancellationToken cancellationToken)
